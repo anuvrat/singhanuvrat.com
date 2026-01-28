@@ -1,6 +1,5 @@
 ---
 import BaseLayout from './BaseLayout.astro';
-import TableOfContents from '../components/TableOfContents.astro';
 import { getReadingTime } from '../utils/readingTime';
 
 interface Props {
@@ -13,7 +12,7 @@ interface Props {
   ogImage?: string;
 }
 
-const { title, description, pubDate, updatedDate, headings, body, ogImage } = Astro.props;
+const { title, description, pubDate, updatedDate, body, ogImage } = Astro.props;
 
 // Auto-generate OG image URL if not provided
 const slug = Astro.url.pathname.replace(/^\//, '').replace(/\/$/, '');
@@ -41,11 +40,7 @@ const readingTime = getReadingTime(body);
 
 <BaseLayout title={`${title} — Anuvrat`} description={description} ogImage={finalOgImage}>
   <article class="post">
-    <div class="post-grid">
-      <aside class="toc-column">
-        <TableOfContents headings={headings} />
-      </aside>
-
+    <div class="post-layout">
       <div class="content-column">
         <header class="post-header">
           <h1>{title}</h1>
@@ -80,26 +75,16 @@ const readingTime = getReadingTime(body);
     margin: 0 auto;
   }
 
-  .post-grid {
+  .post-layout {
     display: grid;
     grid-template-columns: 1fr;
     gap: var(--space-lg);
   }
 
   @media (min-width: 1024px) {
-    .post-grid {
-      grid-template-columns: var(--sidebar-width) var(--content-width) var(--sidebar-width);
+    .post-layout {
+      grid-template-columns: var(--content-width) var(--sidebar-width);
       gap: var(--space-xl);
-    }
-  }
-
-  .toc-column {
-    display: none;
-  }
-
-  @media (min-width: 1024px) {
-    .toc-column {
-      display: block;
     }
   }
 
