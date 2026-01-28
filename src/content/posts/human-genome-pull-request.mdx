@@ -1,42 +1,39 @@
 ---
 title: "A Baby, a Bug, and a Pull Request to the Human Genome"
 description: "Understanding CRISPR through the lens of software: how doctors shipped a personalized bug fix to a baby's genome using molecular find-and-replace."
-pubDate: 2026-01-28
+pubDate: 2025-05-29
 tags: ["deep-dive"]
 ---
 
-A few weeks ago, I read a story that I haven’t been able to shake off. A baby named KJ Muldoon was born with a rare genetic disorder — one that, if untreated, would’ve ended his life before it truly began. But instead of planning for palliative care, the doctors at Children’s Hospital of Philadelphia did something astonishing.
+A few weeks ago, I read a [story](https://www.chop.edu/news/worlds-first-patient-treated-personalized-crispr-gene-editing-therapy-childrens-hospital) that I haven’t been able to shake off. A baby named KJ Muldoon was born with a rare genetic disorder — one that, if untreated, would’ve ended his life before it truly began. But instead of planning for palliative care, the doctors at Children’s Hospital of Philadelphia did something astonishing.
 
 They edited his DNA. They shipped a bug fix to his genome.
 
 And it worked. This wasn’t some off-the-shelf therapy. The fix was handcrafted, tested, and deployed just for KJ. A one-time, one-person gene edit. The tool they used was CRISPR. I had heard the word thrown around in science headlines, but I had no idea what it actually meant — or why it’s such a big deal. So I did what I usually do when something technical intimidates me — I opened a new note and started writing it down like a software system I wanted to understand.
 
-**DNA Is the Codebase**
+## DNA Is the Codebase
 
 Let’s start with the basics. Every cell in your body (minus a few exceptions like red blood cells) carries a full copy of your DNA — your personal codebase. It’s a 3.2 billion character–long sequence, written in a four-letter alphabet: A, T, C, and G. This code doesn’t run all at once. Cells interpret just the parts they need, kind of like microservices choosing which modules to load from a shared monorepo. Some lines of code are configuration — they turn things on and off. Some are executable — they get translated into proteins, which do the actual work.
 
-**The Bug in KJ’s Code**
+## The Bug in KJ’s Code
 
 In KJ’s case, one of those code lines was wrong. A single typo. A gene responsible for a crucial enzyme in the liver had a defect. You can think of it like a function that always throws an exception, but in the runtime of the human body, that crash leads to metabolic failure.
 
 In a traditional system, we’d hotfix the code and redeploy. But humans don’t come with continuous deployment pipelines. Or at least, they didn’t.
 
-**CRISPR: The Find-and-Replace Engine for DNA**
+## CRISPR: The Find-and-Replace Engine for DNA
 
 CRISPR is a technology borrowed from nature and repurposed for editing genetic code. The core idea is shockingly simple: use a search string to find the exact spot in the DNA where a bug lives, then use a “molecular scalpel” to cut it, and finally — optionally — paste in a corrected version.
 
 It works in three steps:
 
-1.  gRNA (guide RNA): This is your grep query. A ~20-character sequence that tells the system exactly what to look for in the genome. In KJ’s case, it was a needle-in-a-haystack match that located the defective gene in the liver’s DNA.
-    
-2.  Cas9 enzyme: This is the cutter. Once the gRNA finds its match, Cas9 makes a clean double-stranded break in the DNA at that location. Think of it as opening the source file at the exact line with the bug and placing your cursor there, ready to edit.
-    
-3.  Repair Template (optional): After the cut, the system needs to patch the break. Sometimes it just slaps the ends back together (a rough fix, useful for turning things off). But if you supply a repair template — basically a diff file — the cell can apply a precise fix.
-    
+1.  **gRNA (guide RNA):** This is your grep query. A ~20-character sequence that tells the system exactly what to look for in the genome. In KJ’s case, it was a needle-in-a-haystack match that located the defective gene in the liver’s DNA.
+2.  **Cas9 enzyme:** This is the cutter. Once the gRNA finds its match, Cas9 makes a clean double-stranded break in the DNA at that location. Think of it as opening the source file at the exact line with the bug and placing your cursor there, ready to edit.
+3.  **Repair Template (optional):** After the cut, the system needs to patch the break. Sometimes it just slaps the ends back together (a rough fix, useful for turning things off). But if you supply a repair template — basically a diff file — the cell can apply a precise fix.
 
 CRISPR lets us write a targeted, declarative patch and ship it at the molecular level.
 
-**How Did They Patch Only KJ’s Liver?**
+## How Did They Patch Only KJ’s Liver?
 
 Here’s the part that blew my mind. Remember how every cell has the same codebase? So wouldn’t CRISPR, once introduced, start editing every matching file?
 
@@ -44,13 +41,13 @@ Not if you package it cleverly.
 
 The doctors used lipid nanoparticles — tiny fat bubbles that ferry molecular payloads into cells — tuned to be picked up primarily by liver cells. This is like deploying your fix only to a specific region of your production cluster. Even though the DNA is identical across the body, only the liver machines ran the hotfix script.
 
-**Designing for Safety: Avoiding the Wrong Files**
+## Designing for Safety: Avoiding the Wrong Files
 
 CRISPR’s power comes with risk. What if your grep is too vague and hits multiple files? What if you accidentally cut the wrong line? This is called an off-target effect, and it can be disastrous — imagine silently corrupting a critical system file. To avoid this, scientists rigorously test gRNA sequences using both software simulations and lab assays. They look for sequences that are unique enough to only match the intended location, and they test for false positives before ever deploying to a human.
 
 The goal is precision: one match, one cut, one fix.
 
-**A Future of One-Line Fixes**
+## A Future of One-Line Fixes
 
 KJ’s story is the first time I’ve seen personalized medicine go from concept to commit. The doctors wrote a patch that corrected a specific mutation, in a specific patient, at a specific organ, with a single deployment. It was a one-off fix. But it’s a hint of what might become routine.
 
