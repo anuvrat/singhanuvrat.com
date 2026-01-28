@@ -1,15 +1,13 @@
 ---
 title: "Debugging Pip Extras: A Deep Dive into .whl Files"
 description: "A debugging journey into Python wheel files: why pip couldn't find an 'extra' that was clearly defined in setup.py, and how to inspect .whl metadata."
-pubDate: 2026-01-28
+pubDate: 2025-01-08
 tags: ["deep-dive", "tutorial"]
 ---
 
-## Background
-
 Python packaging has a nifty feature to include packages as an optional dependency for extended functionality. As an example, Amazon SageMaker released a new capability to use partner AI apps within SageMaker. We worked with the partner app teams to include `sagemaker` as an optional dependency of their app SDK. Within AWS, you can enable the partner app and install the SDK to include SageMaker specific functionalities.
 
-```bash
+```sh
 pip install partner_app_sdk[sagemaker]
 ```
 
@@ -19,7 +17,7 @@ The optional dependency is declared by defining an `extras_require` section in t
 
 An engineer on my team was testing a new version of a partner’s SDK. When they ran the command to upgrade the dependency, they encountered the following message:
 
-```bash
+```sh
 > pip install partner_app_sdk[sagemaker] -U
 
 Requirement already satisfied: partner_app_sdk[sagemaker] in /opt/conda/lib/python3.11/site-packages (0.1.5)
@@ -34,10 +32,8 @@ Despite the new version 0.2.2 being downloaded, pip warned that the `sagemaker` 
 
 To debug what was happening, we started by reviewing the `setup.py` files for both the versions. The `extras_required` section correctly listed `sagemaker` as its dependency. So, why was pip unable to find `sagemaker` in the new version? We explored the following options:
 
-1.  Could the pip cache be corrupted? This was easy to rule out. We cleared the cache and re-ran the update command. Didn’t resolve the issue.
-    
-2.  Could it be a problem with the wheel `.whl` file?
-    
+1. Could the pip cache be corrupted? This was easy to rule out. We cleared the cache and re-ran the update command. Didn’t resolve the issue.
+2. Could it be a problem with the wheel `.whl` file?
 
 ## Deep Dive into Wheel Files
 
@@ -47,7 +43,7 @@ A wheel (`.whl`) is a binary distribution format for Python packages. It contain
 
 To check the `.whl` files, we downloaded it manually and examined the metadata inside the wheel.
 
-```bash
+```sh
 > pip download partner_app_sdk==0.1.5 --no-deps
 > unzip -p partner_app_sdk-0.1.5-py3-none-any.whl | grep -A 5 "Provides-Extra"
 

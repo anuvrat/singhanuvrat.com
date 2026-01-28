@@ -1,7 +1,7 @@
 ---
-title: "The \"Files are the Database\": A Deep Dive into Delta Lake"
+title: 'The "Files are the Database": A Deep Dive into Delta Lake'
 description: "How a simple transaction log turned cloud object storage into a reliable data warehouse — and the trade-offs between file-based lakehouse and traditional database architectures."
-pubDate: 2026-01-28
+pubDate: 2025-11-27
 tags: ["databases", "data-engineering", "storage-systems", "deep-dive"]
 ---
 
@@ -13,93 +13,79 @@ Delta Lake asks a different question. What if we don’t build the storage layer
 
 Here is how it works.
 
-### The Problem: The “Cloud Physics” Gap
+## The Problem: The “Cloud Physics” Gap
 
 For years, data engineers had to choose between two bad options.
 
-**Option A: The Data Warehouse (like Snowflake or Redshift).** It’s consistent and reliable (ACID). If you write data, it’s there. But it’s expensive and proprietary. You can’t just open the files with another tool.
-
-**Option B: The Data Lake (S3 or Azure Blob).** It’s cheap and open. You just dump Parquet files into a bucket. But it’s unsafe. S3 is “eventually consistent.” If a job crashes while writing, you get corrupt “ghost files.” If you read while writing, you might see partial data.
+- **Option A: The Data Warehouse (like Snowflake or Redshift).** It’s consistent and reliable (ACID). If you write data, it’s there. But it’s expensive and proprietary. You can’t just open the files with another tool.
+- **Option B: The Data Lake (S3 or Azure Blob).** It’s cheap and open. You just dump Parquet files into a bucket. But it’s unsafe. S3 is “eventually consistent.” If a job crashes while writing, you get corrupt “ghost files.” If you read while writing, you might see partial data.
 
 Delta Lake was born to fix this. It brings ACID guarantees to object storage without building a new database engine.
 
-### The Architecture: The “Database” is just a Folder
+## The Architecture: The “Database” is just a Folder
 
 The core idea is simple: decouple the **Physical State** (what files are in the bucket) from the **Logical State** (what files actually belong to the table).
 
 This happens in the Transaction Log.
 
-#### 1\. The Transaction Log (`_delta_log`)
+### 1\. The Transaction Log (`_delta_log`)
 
 Instead of asking S3 to list thousands of files (which is slow), Delta Lake checks a folder named `_delta_log`.
 
--   **The “WAL” (JSON Files):** Every change is a JSON file. `000001.json` might say: _Add “file\_A.parquet”, Remove “file\_B.parquet”._
-    
--   **The “Checkpoint” (Parquet Files):** To keep the log from getting too big, Delta compacts these JSON files into a Parquet checkpoint every few commits.
-    
+- **The “WAL” (JSON Files):** Every change is a JSON file. `000001.json` might say: _Add “file_A.parquet”, Remove “file_B.parquet”._
+- **The “Checkpoint” (Parquet Files):** To keep the log from getting too big, Delta compacts these JSON files into a Parquet checkpoint every few commits.
 
 Why JSON? It’s human-readable. You can literally open the file and see what happened.
 
-#### 2\. Access Protocols (ACID on S3)
+### 2\. Access Protocols (ACID on S3)
 
 This is where the physics gets tricky.
 
--   **Reading:** When you query a table, the reader checks the log first. It finds the valid list of files and then asks S3 for them. The log is the single source of truth.
-    
--   **Writing:** Writers upload data to S3 first (invisible to readers). Then, they try to create the next log entry (e.g., `000011.json`).
-    
+- **Reading:** When you query a table, the reader checks the log first. It finds the valid list of files and then asks S3 for them. The log is the single source of truth.
+- **Writing:** Writers upload data to S3 first (invisible to readers). Then, they try to create the next log entry (e.g., `000011.json`).
 
 On Google Cloud or Azure, this is easy because the storage supports atomic operations. On AWS S3, it’s harder. S3 lacks a “put-if-absent” feature, so Delta needs a small external helper (like DynamoDB) to make sure two writers don’t create the same log entry at the same time.
 
-### High-Level “Superpowers”
+## High-Level “Superpowers”
 
 Because the log is immutable (we never change past entries), we get features that usually require an enterprise database.
 
--   **Time Travel:** Since we don’t delete data immediately (we just mark it as “removed” in the log), you can query the table as it existed yesterday.
-    
--   **Unified Batch & Streaming:** A streaming job can just watch the transaction log. It acts like a Kafka topic. New file added? Process it.
-    
--   **Schema Enforcement:** Delta checks data types before writing. It acts like a bouncer, keeping bad data out.
-    
+- **Time Travel:** Since we don’t delete data immediately (we just mark it as “removed” in the log), you can query the table as it existed yesterday.
+- **Unified Batch & Streaming:** A streaming job can just watch the transaction log. It acts like a Kafka topic. New file added? Process it.
+- **Schema Enforcement:** Delta checks data types before writing. It acts like a bouncer, keeping bad data out.
 
-### Performance: Making Files Fast
+## Performance: Making Files Fast
 
 How does a file-based system compete with a specialized engine?
 
--   **Compaction:** It solves the “Small File Problem.” A background process (OPTIMIZE) grabs thousands of tiny files and rewrites them into larger, efficient chunks.
-    
--   **Z-Ordering:** This organizes data inside the files. If you filter by `CustomerID`, Delta physically groups those customers together. This lets the engine skip over 90% of the data it doesn’t need.
-    
+- **Compaction:** It solves the “Small File Problem.” A background process (OPTIMIZE) grabs thousands of tiny files and rewrites them into larger, efficient chunks.
+- **Z-Ordering:** This organizes data inside the files. If you filter by `CustomerID`, Delta physically groups those customers together. This lets the engine skip over 90% of the data it doesn’t need.
 
-### The Architectural Debate: Files vs. Services
+## The Architectural Debate: Files vs. Services
 
 This brings me back to the papers I’ve been reading. The trade-offs here are fascinating.
 
-#### Delta Lake vs. Facebook Tectonic
+### Delta Lake vs. Facebook Tectonic
 
 In my post about Tectonic, I noted that it manages the **physical placement** of blocks on hard drives. It’s a filesystem. Delta Lake is a **Table Layer**. It doesn’t care about blocks or hard drives. It assumes S3 handles the hardware. It pushes all the complexity to the client (Spark), keeping the storage layer simple.
 
-#### Delta Lake vs. Snowflake
+### Delta Lake vs. Snowflake
 
 This is the classic “Dashboard Latency” trade-off.
 
 **Snowflake** uses an always-on database (FoundationDB) to track metadata.
 
--   **Pro:** It’s fast. You can look up a single row in milliseconds.
-    
--   **Con:** It costs money to keep that infrastructure running.
-    
+- **Pro:** It’s fast. You can look up a single row in milliseconds.
+- **Con:** It costs money to keep that infrastructure running.
 
 **Delta Lake** keeps metadata in files.
 
--   **Pro:** Infinite scale. Zero “always-on” cost.
-    
--   **Con:** The “Startup Tax.” To read the table, you have to parse the JSON log. That takes 200-700ms.
-    
+- **Pro:** Infinite scale. Zero “always-on” cost.
+- **Con:** The “Startup Tax.” To read the table, you have to parse the JSON log. That takes 200-700ms.
 
 This explains why Delta is amazing for scanning billions of rows but bad for powering a snappy user dashboard.
 
-### Summary
+## Summary
 
 Delta Lake represents a shift from “Smart Storage” to “Open Storage.” By implementing a transaction log over standard files, it proves you don’t need a proprietary engine to get reliability.
 

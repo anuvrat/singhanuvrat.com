@@ -1,7 +1,7 @@
 ---
 title: "Parsing JSON in Hive Using the JSON SerDe"
 description: "Parsing complex nested JSON in Hive using the JSON SerDe and lateral view explode — no custom UDFs required."
-pubDate: 2026-01-28
+pubDate: 2017-05-24
 tags: ["data-engineering", "tutorial"]
 ---
 
@@ -22,14 +22,14 @@ In an earlier post, I wrote a custom UDF to read JSON into my table. Since then,
 Now, using the Hive-JSON-Serde you can parse the above JSON record as:
 
 ```sql
-create table order_raw(
+CREATE TABLE order_raw(
   customer map<string, string>,
   order map<string, string>
-) row format serde 'org.openx.data.jsonserde.JsonSerDe'
-location '<location-to-file>';
+) ROW FORMAT SERDE 'org.openx.data.jsonserde.JsonSerDe'
+LOCATION '<location-to-file>';
 
-select customer['given_name'], customer['surname'], order['id']
-from order_raw;
+SELECT customer['given_name'], customer['surname'], order['id']
+FROM order_raw;
 ```
 
 This is really great! I can now parse more complicated JSON without writing any UDF. The fun doesn’t stop here. We can now define JSON that have nested arrays and maps and parse them using the lateral view along with the explode() UDF provided by hive. Let’s take another example to demonstrate the power of Hive-JSON-Serde.
@@ -68,21 +68,21 @@ Okay, so the JSON looks a little complicated. But that was my aim. Let’s say t
 Now let’s create a table for this JSON using the Hive-JSON-Serde.
 
 ```sql
-create table cust_trips (
-    customerId  string,
-    age int,
-    services array<struct<
-        trips:array<struct<
-            tripId:string,
-            fare:double,
-            distanceTravelled:double,
-            referrals:struct<
-                email_campaign:map<string, struct<referralIds:array<string>>>
+CREATE TABLE cust_trips (
+    customerId  STRING,
+    age INT,
+    services ARRAY<STRUCT<
+        trips:ARRAY<STRUCT<
+            tripId:STRING,
+            fare:DOUBLE,
+            distanceTravelled:DOUBLE,
+            referrals:STRUCT<
+                email_campaign:MAP<STRING, STRUCT<referralIds:ARRAY<STRING>>>
             >
         >>
     >>
-) row format serde 'org.openx.data.jsonserde.JsonSerDe'
-location '<location-of-files>';
+) ROW FORMAT SERDE 'org.openx.data.jsonserde.JsonSerDe'
+LOCATION '<location-of-files>';
 ```
 
 Awesome!! Designing the table was the hardest part, where all the magic happens. If done properly, extracting data is a smooth sailing. Let’s get the count of customers referred by each referralId. For this, we need to write a query where we group all the records by referralId and take the count of distinct customerIds. Remember that referralId was nested so deep in the JSON, perhaps within multiple arrays.
@@ -92,15 +92,15 @@ We will use the explode() UDF to explode an array into different rows. For examp
 Here’s the query that answers the question posed above.
 
 ```sql
-select
+SELECT
     campName,
     refIdArr.referralIds[0],
-    count(distinct customerId)
-from cust_trips ct
-    lateral view explode(ct.services) v1 as s
-    lateral view explode(s.trips) v2 as t
-    lateral view explode(t.referrals.email_campaign) v2 as campName, refIdArr
-group by
+    COUNT(DISTINCT customerId)
+FROM cust_trips ct
+    LATERAL VIEW EXPLODE(ct.services) v1 AS s
+    LATERAL VIEW EXPLODE(s.trips) v2 AS t
+    LATERAL VIEW EXPLODE(t.referrals.email_campaign) v2 AS campName, refIdArr
+GROUP BY
     campName,
     refIdArr.referralIds[0];
 ```
