@@ -4,11 +4,15 @@ description: "A test post to verify the setup works correctly."
 pubDate: 2025-01-27
 ---
 
+import MarginNote from '../../components/MarginNote.astro';
+
 This is a test post. It should render with proper styling.
 
 ## A Heading
 
-Some content under the heading.
+Some content under the heading. <MarginNote>This is a margin note that appears in the sidebar on desktop or as an expandable footnote on mobile.</MarginNote>
+
+Here's some Python code:
 
 ```python
 def hello():
@@ -16,3 +20,13 @@ def hello():
 ```
 
 And some more text after the code block.
+
+## Another Section
+
+More content here to test the table of contents highlighting.
+
+### A Subheading
+
+Even more content to make the page scrollable. <MarginNote>Another margin note to demonstrate the feature works with multiple notes.</MarginNote>
+
+This paragraph has some additional text to fill out the page and make it feel more like a real blog post. The table of contents on the left should highlight the current section as you scroll.
