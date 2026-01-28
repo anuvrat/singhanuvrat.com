@@ -65,6 +65,59 @@ const canonicalURL = new URL(Astro.url.pathname, Astro.site);
       <slot />
     </main>
     <Footer />
+
+    <!-- Copy button for code blocks -->
+    <script>
+      document.querySelectorAll('pre').forEach((pre) => {
+        const button = document.createElement('button');
+        button.className = 'copy-button';
+        button.setAttribute('aria-label', 'Copy code');
+        button.textContent = 'Copy';
+
+        button.addEventListener('click', async () => {
+          const code = pre.querySelector('code')?.textContent || '';
+          await navigator.clipboard.writeText(code);
+          button.textContent = 'Copied!';
+          button.classList.add('copied');
+          setTimeout(() => {
+            button.textContent = 'Copy';
+            button.classList.remove('copied');
+          }, 2000);
+        });
+
+        pre.appendChild(button);
+      });
+    </script>
+
+    <style is:global>
+      .copy-button {
+        position: absolute;
+        top: 0.5rem;
+        right: 0.5rem;
+        padding: 0.25rem 0.5rem;
+        background: var(--bg);
+        border: 1px solid var(--border);
+        border-radius: 4px;
+        cursor: pointer;
+        font-family: var(--font-mono);
+        font-size: 0.75rem;
+        color: var(--text-muted);
+        opacity: 0;
+        transition: opacity 0.2s ease, color 0.2s ease;
+      }
+
+      pre:hover .copy-button {
+        opacity: 1;
+      }
+
+      .copy-button:hover {
+        color: var(--text);
+      }
+
+      .copy-button.copied {
+        color: var(--accent);
+      }
+    </style>
   </body>
 </html>
 
