@@ -1,0 +1,8 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://singhanuvrat.com/sitemap.xml
+
+# Exclude build artifacts
+Disallow: /_astro/
+Disallow: /og/

@@ -1,0 +1,43 @@
+---
+/**
+ * JSON-LD structured data for blog posts.
+ * Helps search engines understand article authorship, dates, and content.
+ */
+interface Props {
+  title: string;
+  description: string;
+  pubDate: Date;
+  updatedDate?: Date;
+  url: string;
+  ogImage?: string;
+}
+
+const { title, description, pubDate, updatedDate, url, ogImage } = Astro.props;
+
+const schema = {
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": title,
+  "description": description,
+  "image": ogImage,
+  "url": url,
+  "datePublished": pubDate.toISOString(),
+  "dateModified": (updatedDate || pubDate).toISOString(),
+  "author": {
+    "@type": "Person",
+    "name": "Anuvrat Singh",
+    "url": "https://singhanuvrat.com/about"
+  },
+  "publisher": {
+    "@type": "Person",
+    "name": "Anuvrat Singh",
+    "url": "https://singhanuvrat.com"
+  },
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": url
+  }
+};
+---
+
+<script type="application/ld+json" set:html={JSON.stringify(schema)} />

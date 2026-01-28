@@ -1,0 +1,75 @@
+---
+/**
+ * Author bio card displayed at the bottom of posts.
+ * Builds trust and establishes expertise.
+ */
+---
+
+<aside class="author-bio">
+  <div class="author-info">
+    <span class="label">Written by</span>
+    <a href="/about/" class="name">Anuvrat Singh</a>
+    <p class="bio">
+      Engineer with 15+ years of experience building distributed systems and infrastructure.
+    </p>
+  </div>
+  <div class="author-links">
+    <a href="https://github.com/anuvrat" target="_blank" rel="noopener">GitHub</a>
+    <a href="https://linkedin.com/in/singhanuvrat" target="_blank" rel="noopener">LinkedIn</a>
+    <a href="https://twitter.com/singhanuvrat" target="_blank" rel="noopener">Twitter</a>
+  </div>
+</aside>
+
+<style>
+  .author-bio {
+    margin-top: var(--space-2xl);
+    padding: var(--space-lg);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    background: var(--bg);
+  }
+
+  .label {
+    font-size: var(--text-sm);
+    color: var(--text-muted);
+    display: block;
+    margin-bottom: var(--space-xs);
+  }
+
+  .name {
+    font-size: var(--text-lg);
+    font-weight: 700;
+    color: var(--text);
+    text-decoration: none;
+  }
+
+  .name:hover {
+    color: var(--accent);
+  }
+
+  .bio {
+    margin-top: var(--space-sm);
+    font-size: var(--text-sm);
+    color: var(--text-muted);
+    line-height: 1.5;
+  }
+
+  .author-links {
+    display: flex;
+    gap: var(--space-md);
+    margin-top: var(--space-md);
+    padding-top: var(--space-md);
+    border-top: 1px solid var(--border);
+  }
+
+  .author-links a {
+    font-size: var(--text-sm);
+    color: var(--accent);
+    text-decoration: none;
+  }
+
+  .author-links a:hover {
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+</style>

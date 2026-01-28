@@ -1,7 +1,8 @@
 ---
 title: "Deconstructing Bigtable: A Study in Distributed System Design"
-description: "After diving into the foundational papers on the Google File System (GFS) and Facebook’s Tectonic, I felt I had a decent grasp of how to build a distributed file system, the foundational layer for sto"
+description: "An analysis of Google's Bigtable paper and the deliberate trade-offs that made it scale: sacrificing SQL for flexibility, trading consistency for performance, and choosing simplicity over features."
 pubDate: 2026-01-28
+tags: ["distributed-systems", "storage-systems", "databases", "paper-analysis"]
 ---
 
 After diving into the foundational papers on the [Google File System (GFS)](https://blog.singhanuvrat.com/p/engineering-trade-offs-in-the-google?r=5c95k) and [Facebook’s Tectonic](https://blog.singhanuvrat.com/p/tectonic-navigating-design-trade?r=5c95k), I felt I had a decent grasp of how to build a distributed file system, the foundational layer for storing massive amounts of data. The next logical step was to climb up the stack. How do you go from just storing files to managing structured data at Google’s scale?

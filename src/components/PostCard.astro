@@ -1,4 +1,6 @@
 ---
+import { formatDate } from '../utils/formatDate';
+
 interface Props {
   title: string;
   description: string;
@@ -8,17 +10,13 @@ interface Props {
 }
 
 const { title, description, pubDate, slug, readingTime } = Astro.props;
-
-const formattedDate = pubDate.toLocaleDateString('en-US', {
-  year: 'numeric',
-  month: 'short',
-  day: 'numeric',
-});
+const formattedDate = formatDate(pubDate);
 ---
 
 <article class="post-card">
   <a href={`/${slug}`} class="post-link">
     <h2 class="post-title">{title}</h2>
+    {description && <p class="post-description">{description}</p>}
   </a>
   <div class="post-meta">
     <time datetime={pubDate.toISOString()}>{formattedDate}</time>
@@ -53,6 +51,17 @@ const formattedDate = pubDate.toLocaleDateString('en-US', {
     color: var(--accent);
   }
 
+  .post-description {
+    margin-top: var(--space-sm);
+    font-size: var(--text-sm);
+    color: var(--text-muted);
+    line-height: 1.5;
+  }
+
+  .post-link:hover .post-description {
+    color: var(--text);
+  }
+
   .post-meta {
     display: flex;
     gap: var(--space-sm);
@@ -62,6 +71,6 @@ const formattedDate = pubDate.toLocaleDateString('en-US', {
   }
 
   .separator {
-    color: var(--border);
+    color: var(--text-muted);
   }
 </style>

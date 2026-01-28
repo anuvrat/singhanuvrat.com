@@ -3,14 +3,14 @@ import { getCollection } from 'astro:content';
 import PostLayout from '../layouts/PostLayout.astro';
 
 export async function getStaticPaths() {
-  const posts = await getCollection('posts');
+  const posts = await getCollection('posts', ({ data }) => !data.draft);
   return posts.map((post) => ({
     params: { slug: post.slug },
-    props: { post },
+    props: { post, allPosts: posts },
   }));
 }
 
-const { post } = Astro.props;
+const { post, allPosts } = Astro.props;
 const { Content, headings } = await post.render();
 ---
 
@@ -22,6 +22,8 @@ const { Content, headings } = await post.render();
   headings={headings}
   body={post.body || ''}
   ogImage={post.data.ogImage}
+  currentPost={post}
+  allPosts={allPosts}
 >
   <Content />
 </PostLayout>

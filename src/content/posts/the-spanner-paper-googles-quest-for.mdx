@@ -1,7 +1,8 @@
 ---
 title: "The Spanner Paper: Google's Quest for a Globally Consistent Database"
-description: "Or, how to have your Bigtable (scale) and eat your MySQL (transactions) too."
+description: "How Google built a globally consistent database by trading milliseconds of latency for mathematical correctness, using atomic clocks and clever transaction protocols."
 pubDate: 2026-01-28
+tags: ["distributed-systems", "databases", "paper-analysis"]
 ---
 
 In the GFS and Bigtable papers, we saw a clear pattern in Google’s design philosophy: build systems that solve one problem really well, even if it means giving up other features. GFS gave them a file system that spanned the planet, but it didn’t have a standard POSIX API. Bigtable gave them a database with incredible scale, but it didn’t have cross-row transactions.

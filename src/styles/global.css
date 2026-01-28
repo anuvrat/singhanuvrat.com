@@ -15,14 +15,6 @@
   font-display: swap;
 }
 
-@font-face {
-  font-family: 'JetBrains Mono';
-  src: url('/fonts/JetBrainsMono-Italic.woff2') format('woff2');
-  font-weight: 400;
-  font-style: italic;
-  font-display: swap;
-}
-
 /* CSS Variables */
 :root {
   /* Typography */
@@ -104,6 +96,10 @@ h1 { font-size: var(--text-2xl); }
 
 h2 {
   font-size: var(--text-xl);
+}
+
+/* Section divider for h2 only in post content */
+.post-content h2 {
   margin-top: 3.5rem;
   padding-top: var(--space-lg);
   border-top: 1px solid var(--border);
@@ -163,27 +159,23 @@ ul, ol {
   padding-left: var(--space-lg);
 }
 
-li {
-  margin-top: var(--space-xs);
+li + li {
+  margin-top: 0.125rem;
 }
 
-/* Blockquote */
+/* Blockquote - elegant minimal style */
 blockquote {
-  border-left: 4px solid var(--accent);
-  padding: var(--space-md) var(--space-lg);
+  border-left: 2px solid var(--accent);
+  padding-left: var(--space-lg);
   margin-top: var(--space-lg);
   margin-bottom: var(--space-lg);
-  background-color: var(--bg-secondary);
-  border-radius: 0 6px 6px 0;
-  color: var(--text);
+  color: var(--text-muted);
   font-style: italic;
 }
 
 blockquote p:first-child {
   margin-top: 0;
 }
-
-/* Horizontal rule - styled as section divider */
 
 /* Images */
 img {
@@ -196,28 +188,3 @@ img {
   background-color: var(--accent);
   color: var(--bg);
 }
-
-/* Drop cap for first paragraph */
-.post-content > p:first-child::first-letter {
-  float: left;
-  font-size: 3.5rem;
-  line-height: 1;
-  font-weight: 700;
-  margin-right: 0.5rem;
-  margin-top: 0.1rem;
-  color: var(--accent);
-}
-
-/* Better horizontal rule as section divider */
-hr {
-  border: none;
-  text-align: center;
-  margin: var(--space-2xl) 0;
-}
-
-hr::before {
-  content: "· · ·";
-  color: var(--text-muted);
-  letter-spacing: 0.5em;
-}
-

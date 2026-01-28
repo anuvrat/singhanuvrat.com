@@ -1,16 +1,32 @@
 ---
+/**
+ * MarginNote: Sidenotes that appear in the right margin on desktop,
+ * or as expandable footnotes on mobile (checkbox hack, no JS needed).
+ * Numbers auto-increment per page during Astro's static build.
+ */
 interface Props {
   id?: string;
 }
 
 const { id } = Astro.props;
 const noteId = id || `note-${Math.random().toString(36).substr(2, 9)}`;
+
+// Auto-increment counter per page (resets when page path changes)
+const globalKey = Symbol.for('margin-note-counter');
+const globalState = globalThis as Record<symbol, { count: number; page: string }>;
+const currentPage = Astro.url.pathname;
+
+if (!globalState[globalKey] || globalState[globalKey].page !== currentPage) {
+  globalState[globalKey] = { count: 0, page: currentPage };
+}
+const noteNumber = ++globalState[globalKey].count;
 ---
 
 <span class="margin-note-wrapper">
-  <label class="margin-note-toggle" for={noteId}>†</label>
+  <label class="margin-note-toggle" for={noteId}><sup>{noteNumber}</sup></label>
   <input type="checkbox" id={noteId} class="margin-note-checkbox" />
   <span class="margin-note">
+    <span class="margin-note-number">{noteNumber}.</span>
     <slot />
   </span>
 </span>
@@ -27,13 +43,23 @@ const noteId = id || `note-${Math.random().toString(36).substr(2, 9)}`;
   .margin-note-toggle {
     cursor: pointer;
     color: var(--accent);
-    font-size: var(--text-sm);
-    vertical-align: super;
+  }
+
+  .margin-note-toggle sup {
+    font-size: 0.75em;
+    font-weight: 500;
+  }
+
+  .margin-note-number {
+    font-weight: 600;
+    color: var(--accent);
+    margin-right: 0.25em;
   }
 
   .margin-note {
     display: block;
     position: absolute;
+    /* Position in right margin: sidebar-width + gap (--space-xl) from content edge */
     right: calc(-1 * var(--sidebar-width) - var(--space-xl));
     width: var(--sidebar-width);
     font-size: var(--text-sm);

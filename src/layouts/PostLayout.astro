@@ -1,6 +1,12 @@
 ---
+import type { CollectionEntry } from 'astro:content';
 import BaseLayout from './BaseLayout.astro';
+import ArticleSchema from '../components/ArticleSchema.astro';
+import AuthorBio from '../components/AuthorBio.astro';
+import RelatedPosts from '../components/RelatedPosts.astro';
 import { getReadingTime } from '../utils/readingTime';
+import { formatDate, UPDATED_THRESHOLD_MS } from '../utils/formatDate';
+import { findRelatedPosts } from '../utils/relatedPosts';
 
 interface Props {
   title: string;
@@ -10,35 +16,39 @@ interface Props {
   headings: { depth: number; slug: string; text: string }[];
   body: string;
   ogImage?: string;
+  currentPost: CollectionEntry<'posts'>;
+  allPosts: CollectionEntry<'posts'>[];
 }
 
-const { title, description, pubDate, updatedDate, body, ogImage } = Astro.props;
+const { title, description, pubDate, updatedDate, body, ogImage, currentPost, allPosts } = Astro.props;
 
 // Auto-generate OG image URL if not provided
 const slug = Astro.url.pathname.replace(/^\//, '').replace(/\/$/, '');
 const autoOgImage = new URL(`/og/${slug}.png`, Astro.site).toString();
 const finalOgImage = ogImage || autoOgImage;
 
-const formattedPubDate = pubDate.toLocaleDateString('en-US', {
-  year: 'numeric',
-  month: 'short',
-  day: 'numeric',
-});
-
-const formattedUpdatedDate = updatedDate?.toLocaleDateString('en-US', {
-  year: 'numeric',
-  month: 'short',
-  day: 'numeric',
-});
+const formattedPubDate = formatDate(pubDate);
+const formattedUpdatedDate = updatedDate ? formatDate(updatedDate) : null;
 
 // Show updated date only if it's more than 7 days after pubDate
 const showUpdated = updatedDate &&
-  (updatedDate.getTime() - pubDate.getTime()) > 7 * 24 * 60 * 60 * 1000;
+  (updatedDate.getTime() - pubDate.getTime()) > UPDATED_THRESHOLD_MS;
 
 const readingTime = getReadingTime(body);
+const canonicalUrl = new URL(Astro.url.pathname, Astro.site).toString();
+const relatedPosts = findRelatedPosts(currentPost, allPosts, 3);
 ---
 
 <BaseLayout title={`${title} — Anuvrat`} description={description} ogImage={finalOgImage}>
+  <ArticleSchema
+    title={title}
+    description={description}
+    pubDate={pubDate}
+    updatedDate={updatedDate}
+    url={canonicalUrl}
+    ogImage={finalOgImage}
+  />
+
   <article class="post">
     <div class="post-layout">
       <div class="content-column">
@@ -60,6 +70,9 @@ const readingTime = getReadingTime(body);
         <div class="post-content">
           <slot />
         </div>
+
+        <AuthorBio />
+        <RelatedPosts posts={relatedPosts} />
       </div>
 
       <aside class="margin-column">

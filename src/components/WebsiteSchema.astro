@@ -1,0 +1,16 @@
+---
+/**
+ * JSON-LD structured data for the website.
+ * Helps search engines understand site identity.
+ */
+const schema = {
+  "@context": "https://schema.org",
+  "@type": "WebSite",
+  "name": "Anuvrat",
+  "alternateName": "Anuvrat Singh's Blog",
+  "description": "Thoughts on distributed systems, infrastructure, and technology",
+  "url": "https://singhanuvrat.com"
+};
+---
+
+<script type="application/ld+json" set:html={JSON.stringify(schema)} />

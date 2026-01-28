@@ -1,0 +1,87 @@
+---
+import type { CollectionEntry } from 'astro:content';
+import { formatDate } from '../utils/formatDate';
+
+interface Props {
+  posts: CollectionEntry<'posts'>[];
+}
+
+const { posts } = Astro.props;
+---
+
+{posts.length > 0 && (
+  <aside class="related-posts">
+    <h2>Related posts</h2>
+    <ul>
+      {posts.map(post => (
+        <li>
+          <a href={`/${post.slug}/`}>
+            <span class="title">{post.data.title}</span>
+            <span class="date">{formatDate(post.data.pubDate)}</span>
+          </a>
+        </li>
+      ))}
+    </ul>
+  </aside>
+)}
+
+<style>
+  .related-posts {
+    margin-top: var(--space-2xl);
+    padding-top: var(--space-xl);
+    border-top: 1px solid var(--border);
+  }
+
+  .related-posts h2 {
+    font-size: var(--text-base);
+    font-weight: 600;
+    color: var(--text-muted);
+    margin-bottom: var(--space-md);
+    border: none;
+    padding: 0;
+  }
+
+  ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+
+  li {
+    margin: 0;
+  }
+
+  li + li {
+    margin-top: var(--space-sm);
+  }
+
+  a {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: var(--space-md);
+    padding: var(--space-sm) 0;
+    text-decoration: none;
+    color: var(--text);
+    transition: color 0.2s ease;
+  }
+
+  a:hover {
+    color: var(--accent);
+  }
+
+  a:hover .title {
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+
+  .title {
+    font-weight: 500;
+  }
+
+  .date {
+    font-size: var(--text-sm);
+    color: var(--text-muted);
+    white-space: nowrap;
+  }
+</style>

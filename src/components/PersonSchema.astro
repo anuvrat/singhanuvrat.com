@@ -1,0 +1,28 @@
+---
+/**
+ * JSON-LD structured data for author/person.
+ * Helps search engines build author identity and authority.
+ */
+const schema = {
+  "@context": "https://schema.org",
+  "@type": "Person",
+  "name": "Anuvrat Singh",
+  "url": "https://singhanuvrat.com",
+  "jobTitle": "Engineer",
+  "description": "Engineer with 15+ years of experience building distributed systems, infrastructure, and AI/ML platforms.",
+  "knowsAbout": [
+    "Distributed Systems",
+    "Infrastructure",
+    "AI/ML Platforms",
+    "Cloud Computing",
+    "System Design"
+  ],
+  "sameAs": [
+    "https://github.com/anuvrat",
+    "https://linkedin.com/in/singhanuvrat",
+    "https://twitter.com/singhanuvrat"
+  ]
+};
+---
+
+<script type="application/ld+json" set:html={JSON.stringify(schema)} />
