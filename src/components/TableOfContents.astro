@@ -1,0 +1,93 @@
+---
+interface Heading {
+  depth: number;
+  slug: string;
+  text: string;
+}
+
+interface Props {
+  headings: Heading[];
+}
+
+const { headings } = Astro.props;
+const filteredHeadings = headings.filter(h => h.depth <= 3);
+---
+
+{filteredHeadings.length > 0 && (
+  <nav class="toc" aria-label="Table of contents">
+    <ul>
+      {filteredHeadings.map((heading) => (
+        <li class={`depth-${heading.depth}`}>
+          <a href={`#${heading.slug}`}>{heading.text}</a>
+        </li>
+      ))}
+    </ul>
+  </nav>
+)}
+
+<style>
+  .toc {
+    display: none;
+  }
+
+  @media (min-width: 1024px) {
+    .toc {
+      display: block;
+      position: sticky;
+      top: var(--space-xl);
+      max-height: calc(100vh - var(--space-2xl));
+      overflow-y: auto;
+      font-size: var(--text-sm);
+    }
+
+    ul {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+
+    li {
+      margin: 0;
+      padding: var(--space-xs) 0;
+    }
+
+    li.depth-3 {
+      padding-left: var(--space-md);
+    }
+
+    a {
+      color: var(--text-muted);
+      text-decoration: none;
+      display: block;
+      transition: color 0.2s ease;
+    }
+
+    a:hover,
+    a.active {
+      color: var(--accent);
+    }
+  }
+</style>
+
+<script>
+  // Highlight current section on scroll
+  const observer = new IntersectionObserver(
+    (entries) => {
+      entries.forEach((entry) => {
+        const id = entry.target.id;
+        const tocLink = document.querySelector(`.toc a[href="#${id}"]`);
+        if (tocLink) {
+          if (entry.isIntersecting) {
+            document.querySelectorAll('.toc a').forEach(a => a.classList.remove('active'));
+            tocLink.classList.add('active');
+          }
+        }
+      });
+    },
+    { rootMargin: '-80px 0px -80% 0px' }
+  );
+
+  document.querySelectorAll('h2[id], h3[id]').forEach((heading) => {
+    observer.observe(heading);
+  });
+</script>
