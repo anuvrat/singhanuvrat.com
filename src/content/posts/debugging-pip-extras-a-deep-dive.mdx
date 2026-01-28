@@ -8,7 +8,7 @@ pubDate: 2026-01-28
 
 Python packaging has a nifty feature to include packages as an optional dependency for extended functionality. As an example, Amazon SageMaker released a new capability to use partner AI apps within SageMaker. We worked with the partner app teams to include `sagemaker` as an optional dependency of their app SDK. Within AWS, you can enable the partner app and install the SDK to include SageMaker specific functionalities.
 
-```
+```bash
 pip install partner_app_sdk[sagemaker]
 ```
 
@@ -18,7 +18,7 @@ The optional dependency is declared by defining an `extras_require` section in t
 
 An engineer on my team was testing a new version of a partner’s SDK. When they ran the command to upgrade the dependency, they encountered the following message:
 
-```
+```bash
 > pip install partner_app_sdk[sagemaker] -U
 
 Requirement already satisfied: partner_app_sdk[sagemaker] in /opt/conda/lib/python3.11/site-packages (0.1.5)
@@ -46,7 +46,7 @@ A wheel (`.whl`) is a binary distribution format for Python packages. It contain
 
 To check the `.whl` files, we downloaded it manually and examined the metadata inside the wheel.
 
-```
+```bash
 > pip download partner_app_sdk==0.1.5 --no-deps
 > unzip -p partner_app_sdk-0.1.5-py3-none-any.whl | grep -A 5 "Provides-Extra"
 

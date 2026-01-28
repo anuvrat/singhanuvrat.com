@@ -15,7 +15,7 @@ Writing data into partitions is straightforward. You have two options:
 
 Here’s a code snippet that writes into static and dynamic partitions:
 
-```
+```sql
 DROP TABLE IF EXISTS stats;
 
 CREATE EXTERNAL TABLE stats (
@@ -61,7 +61,7 @@ One of the biggest problems I faced when working on a new project with Spark was
 
 Here’s the Spark code that writes the data into partitions:
 
-```
+```text
 impressionsDF
     .write.mode("overwrite")
     .partitionBy("country", "year", "month", "day")
@@ -83,7 +83,7 @@ So, if you are using Spark 2.1.0 and want to write into partitions dynamically w
 
 The idea is to register the dataset as a table and then use spark.sql() to run the INSERT query.
 
-```
+```sql
 // Create SparkSession with Hive dynamic partitioning enabled
 val spark: SparkSession =
     SparkSession

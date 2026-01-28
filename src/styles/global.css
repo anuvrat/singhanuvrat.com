@@ -111,12 +111,14 @@ p {
 a {
   color: var(--accent);
   text-decoration: none;
-  transition: color 0.2s ease;
+  transition: color 0.2s ease, text-decoration-color 0.2s ease;
 }
 
 a:hover {
   color: var(--accent-hover);
   text-decoration: underline;
+  text-decoration-color: var(--border);
+  text-underline-offset: 3px;
 }
 
 /* Code */
@@ -132,6 +134,7 @@ pre {
   background-color: var(--bg-secondary);
   padding: var(--space-md);
   border-radius: 6px;
+  border: 1px solid var(--border);
   overflow-x: auto;
   margin-top: var(--space-md);
   position: relative;
@@ -155,11 +158,18 @@ li {
 
 /* Blockquote */
 blockquote {
-  border-left: 3px solid var(--border);
-  padding-left: var(--space-md);
-  margin-top: var(--space-md);
-  color: var(--text-muted);
+  border-left: 4px solid var(--accent);
+  padding: var(--space-md) var(--space-lg);
+  margin-top: var(--space-lg);
+  margin-bottom: var(--space-lg);
+  background-color: var(--bg-secondary);
+  border-radius: 0 6px 6px 0;
+  color: var(--text);
   font-style: italic;
+}
+
+blockquote p:first-child {
+  margin-top: 0;
 }
 
 /* Horizontal rule */
@@ -179,4 +189,11 @@ img {
 ::selection {
   background-color: var(--accent);
   color: var(--bg);
+}
+
+/* First paragraph emphasis (lead-in) */
+.post-content > p:first-child {
+  font-size: var(--text-lg);
+  line-height: 1.6;
+  color: var(--text);
 }

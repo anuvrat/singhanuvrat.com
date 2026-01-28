@@ -6,7 +6,7 @@ pubDate: 2026-01-28
 
 In an earlier post, I wrote a custom UDF to read JSON into my table. Since then, I have also learned about and used the Hive-JSON-Serde. I will use the same example as before.
 
-```
+```json
 {
   "customer": {
     "given_name": "Anuvrat",
@@ -20,7 +20,7 @@ In an earlier post, I wrote a custom UDF to read JSON into my table. Since then,
 
 Now, using the Hive-JSON-Serde you can parse the above JSON record as:
 
-```
+```sql
 create table order_raw(
   customer map<string, string>,
   order map<string, string>
@@ -37,7 +37,7 @@ Say you have a startup in the transportation domain, like Uber (which is awesome
 
 You get the picture? Cool. Let’s see a sample JSON.
 
-```
+```json
 {
   "customerId": "0277ZGAX80PG6ZSJ04J5",
   "age": 23,
@@ -66,7 +66,7 @@ Okay, so the JSON looks a little complicated. But that was my aim. Let’s say t
 
 Now let’s create a table for this JSON using the Hive-JSON-Serde.
 
-```
+```sql
 create table cust_trips (
     customerId  string,
     age int,
@@ -90,7 +90,7 @@ We will use the explode() UDF to explode an array into different rows. For examp
 
 Here’s the query that answers the question posed above.
 
-```
+```sql
 select
     campName,
     refIdArr.referralIds[0],

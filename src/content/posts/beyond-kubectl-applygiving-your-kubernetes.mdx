@@ -47,7 +47,7 @@ Alright, let's peel back the layers a bit:
 2.  **CRs — The User's Request:** Once the CRD exists, a user can create a Custom Resource (CR) – an instance of your `AwesomeDatabase`. This YAML object holds their specific desired state: "I want version 14.2, 200Gi of storage, and HA enabled."
     
 
-```
+```python
 # User creates this simple(r) object:
 apiVersion: mydatabases.mycompany.com/v1alpha1
 kind: AwesomeDatabase
