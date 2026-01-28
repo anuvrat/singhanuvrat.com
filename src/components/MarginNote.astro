@@ -1,0 +1,71 @@
+---
+interface Props {
+  id?: string;
+}
+
+const { id } = Astro.props;
+const noteId = id || `note-${Math.random().toString(36).substr(2, 9)}`;
+---
+
+<span class="margin-note-wrapper">
+  <label class="margin-note-toggle" for={noteId}>†</label>
+  <input type="checkbox" id={noteId} class="margin-note-checkbox" />
+  <span class="margin-note">
+    <slot />
+  </span>
+</span>
+
+<style>
+  .margin-note-wrapper {
+    position: relative;
+  }
+
+  .margin-note-checkbox {
+    display: none;
+  }
+
+  .margin-note-toggle {
+    cursor: pointer;
+    color: var(--accent);
+    font-size: var(--text-sm);
+    vertical-align: super;
+  }
+
+  .margin-note {
+    display: block;
+    position: absolute;
+    right: calc(-1 * var(--sidebar-width) - var(--space-xl));
+    width: var(--sidebar-width);
+    font-size: var(--text-sm);
+    color: var(--text-muted);
+    line-height: 1.5;
+  }
+
+  /* Mobile: show as expandable footnote */
+  @media (max-width: 1023px) {
+    .margin-note {
+      display: none;
+      position: static;
+      width: 100%;
+      background: var(--bg-secondary);
+      padding: var(--space-sm) var(--space-md);
+      border-radius: 4px;
+      margin-top: var(--space-sm);
+    }
+
+    .margin-note-checkbox:checked + .margin-note {
+      display: block;
+    }
+  }
+
+  /* Desktop: always show in margin */
+  @media (min-width: 1024px) {
+    .margin-note-toggle {
+      display: none;
+    }
+
+    .margin-note {
+      display: block;
+    }
+  }
+</style>
