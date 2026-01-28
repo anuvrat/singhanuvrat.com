@@ -1,0 +1,57 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+---
+
+<BaseLayout title="About — Anuvrat" description="About Anuvrat Singh">
+  <div class="about">
+    <h1>About</h1>
+
+    <p>
+      I'm Anuvrat Singh, currently at <a href="https://x.ai" target="_blank" rel="noopener">xAI</a>.
+    </p>
+
+    <p>
+      Previously, I worked on scalable AI/ML platforms, focusing on privacy, trust, and developer experience.
+    </p>
+
+    <p>
+      This blog is where I think through distributed systems, infrastructure, and occasionally broader technology topics.
+    </p>
+
+    <h2>Elsewhere</h2>
+
+    <ul class="links">
+      <li><a href="https://github.com/anuvrat" target="_blank" rel="noopener">GitHub</a></li>
+      <li><a href="https://linkedin.com/in/singhanuvrat" target="_blank" rel="noopener">LinkedIn</a></li>
+      <li><a href="https://twitter.com/singhanuvrat" target="_blank" rel="noopener">Twitter/X</a></li>
+    </ul>
+  </div>
+</BaseLayout>
+
+<style>
+  .about {
+    max-width: var(--content-width);
+  }
+
+  h1 {
+    margin-bottom: var(--space-xl);
+  }
+
+  h2 {
+    margin-top: var(--space-2xl);
+  }
+
+  p {
+    margin-top: var(--space-md);
+  }
+
+  .links {
+    margin-top: var(--space-md);
+    list-style: none;
+    padding: 0;
+  }
+
+  .links li {
+    margin-top: var(--space-sm);
+  }
+</style>
