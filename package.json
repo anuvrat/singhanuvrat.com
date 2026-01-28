@@ -12,7 +12,9 @@
   "dependencies": {
     "@astrojs/mdx": "^4.3.13",
     "@astrojs/rss": "^4.0.15",
-    "astro": "^5.16.15"
+    "astro": "^5.16.15",
+    "satori": "^0.19.1",
+    "sharp": "^0.34.5"
   },
   "pnpm": {
     "onlyBuiltDependencies": [

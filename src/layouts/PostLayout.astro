@@ -15,6 +15,11 @@ interface Props {
 
 const { title, description, pubDate, updatedDate, headings, body, ogImage } = Astro.props;
 
+// Auto-generate OG image URL if not provided
+const slug = Astro.url.pathname.replace(/^\//, '').replace(/\/$/, '');
+const autoOgImage = new URL(`/og/${slug}.png`, Astro.site).toString();
+const finalOgImage = ogImage || autoOgImage;
+
 const formattedPubDate = pubDate.toLocaleDateString('en-US', {
   year: 'numeric',
   month: 'short',
@@ -34,7 +39,7 @@ const showUpdated = updatedDate &&
 const readingTime = getReadingTime(body);
 ---
 
-<BaseLayout title={`${title} — Anuvrat`} description={description} ogImage={ogImage}>
+<BaseLayout title={`${title} — Anuvrat`} description={description} ogImage={finalOgImage}>
   <article class="post">
     <div class="post-grid">
       <aside class="toc-column">
