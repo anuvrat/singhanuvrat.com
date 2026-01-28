@@ -2,7 +2,6 @@
 import type { CollectionEntry } from 'astro:content';
 import BaseLayout from './BaseLayout.astro';
 import ArticleSchema from '../components/ArticleSchema.astro';
-import AuthorBio from '../components/AuthorBio.astro';
 import RelatedPosts from '../components/RelatedPosts.astro';
 import { getReadingTime } from '../utils/readingTime';
 import { formatDate, UPDATED_THRESHOLD_MS } from '../utils/formatDate';
@@ -55,6 +54,8 @@ const relatedPosts = findRelatedPosts(currentPost, allPosts, 3);
         <header class="post-header">
           <h1>{title}</h1>
           <div class="post-meta">
+            <a href="/about/" class="author">Anuvrat Singh</a>
+            <span class="separator">·</span>
             <time datetime={pubDate.toISOString()}>{formattedPubDate}</time>
             <span class="separator">·</span>
             <span>{readingTime}</span>
@@ -71,8 +72,9 @@ const relatedPosts = findRelatedPosts(currentPost, allPosts, 3);
           <slot />
         </div>
 
-        <AuthorBio />
-        <RelatedPosts posts={relatedPosts} />
+        <footer class="post-footer">
+          <RelatedPosts posts={relatedPosts} />
+        </footer>
       </div>
 
       <aside class="margin-column">
@@ -132,8 +134,18 @@ const relatedPosts = findRelatedPosts(currentPost, allPosts, 3);
     color: var(--text-muted);
   }
 
+  .author {
+    color: var(--text);
+    text-decoration: none;
+    font-weight: 500;
+  }
+
+  .author:hover {
+    color: var(--accent);
+  }
+
   .separator {
-    color: var(--border);
+    color: var(--text-muted);
   }
 
   .updated {
@@ -142,5 +154,11 @@ const relatedPosts = findRelatedPosts(currentPost, allPosts, 3);
 
   .post-content {
     position: relative;
+  }
+
+  .post-footer {
+    margin-top: var(--space-2xl);
+    padding-top: var(--space-xl);
+    border-top: 1px solid var(--border);
   }
 </style>

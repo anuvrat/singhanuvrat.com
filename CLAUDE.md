@@ -6,14 +6,16 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 Personal blog for Anuvrat Singh at singhanuvrat.com. Built with Astro + MDX, deployed on Vercel.
 
+**Author:** Anuvrat Singh — Engineer with 15+ years building distributed systems and infrastructure
 **Tagline:** "Thinking in systems"
 
 ## Tech Stack
 
 - **Framework:** Astro 5.x with MDX
 - **Styling:** Vanilla CSS with CSS custom properties
-- **Fonts:** JetBrains Mono (self-hosted)
+- **Fonts:** JetBrains Mono (self-hosted, Regular + Bold)
 - **Deployment:** Vercel (static output)
+- **OG Images:** Auto-generated via satori + sharp
 
 ## Commands
 
@@ -21,7 +23,6 @@ Personal blog for Anuvrat Singh at singhanuvrat.com. Built with Astro + MDX, dep
 pnpm run dev      # Start dev server at localhost:4321
 pnpm run build    # Build for production
 pnpm run preview  # Preview production build
-pnpm run migrate  # Migrate posts from Substack (one-time, already done)
 ```
 
 ## Project Structure
@@ -29,28 +30,34 @@ pnpm run migrate  # Migrate posts from Substack (one-time, already done)
 ```
 src/
 ├── components/
-│   ├── Header.astro         # Site header with title and theme toggle
-│   ├── Footer.astro         # Footer with About and RSS links
-│   ├── PostCard.astro       # Post list item for homepage
-│   ├── MarginNote.astro     # Sidenotes (desktop: margin, mobile: expandable)
-│   ├── TableOfContents.astro # Desktop-only sticky ToC
-│   └── ThemeToggle.astro    # Dark/light mode switch
+│   ├── Header.astro           # Site header with title and theme toggle
+│   ├── Footer.astro           # Footer with About and RSS links
+│   ├── PostCard.astro         # Post list item (title, description, date)
+│   ├── MarginNote.astro       # Sidenotes with auto-numbering
+│   ├── ThemeToggle.astro      # Dark/light mode switch
+│   ├── RelatedPosts.astro     # Tag-aware related posts
+│   ├── ArticleSchema.astro    # JSON-LD for blog posts
+│   ├── PersonSchema.astro     # JSON-LD for author (About page)
+│   └── WebsiteSchema.astro    # JSON-LD for site (homepage)
 ├── layouts/
-│   ├── BaseLayout.astro     # HTML shell, meta tags, dark mode script
-│   └── PostLayout.astro     # Three-column post template
+│   ├── BaseLayout.astro       # HTML shell, meta tags, dark mode script
+│   └── PostLayout.astro       # Two-column post template with margin notes
 ├── pages/
-│   ├── index.astro          # Homepage (post list)
-│   ├── about.astro          # About page
-│   ├── [...slug].astro      # Dynamic post routes
-│   ├── rss.xml.ts           # RSS feed
-│   └── og/[...slug].png.ts  # Auto-generated OG images
+│   ├── index.astro            # Homepage (posts grouped by year)
+│   ├── about.astro            # About page with PersonSchema
+│   ├── [...slug].astro        # Dynamic post routes
+│   ├── rss.xml.ts             # RSS feed
+│   ├── sitemap.xml.ts         # Dynamic sitemap
+│   └── og/[...slug].png.ts    # Auto-generated OG images
 ├── content/
-│   ├── config.ts            # Content collection schema
-│   └── posts/               # MDX blog posts
+│   ├── config.ts              # Content collection schema (with tags)
+│   └── posts/                 # MDX blog posts
 ├── styles/
-│   └── global.css           # CSS variables, typography, themes
+│   └── global.css             # CSS variables, typography, themes
 └── utils/
-    └── readingTime.ts       # Word count to reading time
+    ├── readingTime.ts         # Word count to reading time
+    ├── formatDate.ts          # Date formatting + constants
+    └── relatedPosts.ts        # Tag + keyword similarity algorithm
 ```
 
 ## Writing Posts
@@ -64,49 +71,85 @@ description: "Meta description for SEO and previews"
 pubDate: 2025-01-27
 updatedDate: 2025-01-28  # Optional, shows if >7 days after pubDate
 draft: false              # Optional, hides from production if true
+tags: ["distributed-systems", "paper-analysis"]  # For related posts
 ogImage: /custom-og.png   # Optional, overrides auto-generated
 ---
 ```
 
+### Available Tags
+
+- `distributed-systems` — Core distributed systems concepts
+- `storage-systems` — File systems, object storage
+- `databases` — Database systems, transactions
+- `infrastructure` — Kubernetes, cloud, DevOps
+- `data-engineering` — Spark, Hive, pipelines
+- `ai` — AI/ML systems and implications
+- `security` — Security architecture
+- `paper-analysis` — Analysis of research papers
+- `deep-dive` — In-depth technical exploration
+- `tutorial` — How-to content
+
 ### Using Margin Notes
 
-```mdx
-import MarginNote from '../../components/MarginNote.astro';
+Margin notes appear in the right margin on desktop, expand on mobile tap.
+Numbers auto-increment per page.
 
-Some text here. <MarginNote>This appears in the right margin on desktop.</MarginNote>
+```mdx
+import MarginNote from '../components/MarginNote.astro';
+
+Some text here.<MarginNote>This appears in the right margin.</MarginNote>
 ```
 
 ## Theming
 
-Colors are CSS variables in `src/styles/global.css`. To change accent color:
+Dark mode uses `html.dark` class (not body). Colors are CSS variables:
 
 ```css
 :root {
   --accent: #4a6fa5;      /* Light mode */
 }
 
-body.dark {
+html.dark {
   --accent: #6db3c2;      /* Dark mode */
 }
 ```
 
+Theme persists via localStorage. Toggle script uses `document.documentElement`.
+
+## SEO
+
+- **JSON-LD:** ArticleSchema on posts, PersonSchema on About, WebsiteSchema on homepage
+- **Sitemap:** Auto-generated at `/sitemap.xml`
+- **robots.txt:** Allows all, references sitemap
+- **OG Images:** Auto-generated per post (title + tagline)
+- **Meta tags:** Title, description, canonical, OG, Twitter cards
+
+## Related Posts Algorithm
+
+Uses hybrid scoring: `(tag_overlap × 2) + keyword_similarity`
+
+1. Tag matches are primary signal (each match = 2 points)
+2. Keyword similarity on title + description is secondary (0-1 points)
+3. Falls back to recent posts if no relevant matches
+
 ## Key Architecture Decisions
 
-1. **Zero client-side JS except dark mode toggle** — Pure static HTML + CSS
-2. **ToC desktop-only** — Mobile readers scroll naturally
-3. **Margin notes as component** — Not markdown syntax, explicit control
-4. **No tags/search** — Minimal, homepage is scannable
-5. **Auto OG images** — Generated via satori, can override per-post
-6. **Three-column layout** — ToC (left) | Content | Margin Notes (right)
+1. **Minimal JS** — Only theme toggle + code copy button
+2. **Two-column layout** — Content | Margin notes (desktop only)
+3. **Margin notes as component** — Explicit control, auto-numbered
+4. **Tags for related posts** — Not for filtering/navigation
+5. **Auto OG images** — Generated via satori at build time
+6. **Single-author blog** — Compact byline, no heavy author boxes
+7. **Year-grouped homepage** — Posts organized chronologically with descriptions
 
 ## Future Additions (prepared for)
 
 - **LaTeX:** Add `remark-math` + `rehype-katex` to astro.config.mjs
-- **Tags:** Add to frontmatter schema, create filter component
 - **Search:** Add Pagefind at build time
+- **Newsletter:** Add signup component, integrate with Buttondown/Substack
 
 ## Deployment
 
 Connected to Vercel via GitHub. Push to `main` triggers auto-deploy.
 
-**Custom domain:** singhanuvrat.com (configure in Vercel dashboard → Domains)
+**Custom domain:** singhanuvrat.com (configured in Vercel dashboard)
