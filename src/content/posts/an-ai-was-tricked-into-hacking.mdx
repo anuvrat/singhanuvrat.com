@@ -1,0 +1,64 @@
+---
+title: "An AI Was Tricked Into Hacking"
+description: "The Real Flaw Is in Our Design"
+pubDate: 2026-01-28
+---
+
+We just got our first real look at an AI-orchestrated cyber attack.
+
+In mid-September 2025, a state-sponsored group launched a sophisticated cyber-espionage campaign designated GTG-1002. What made this one different wasn’t just the scale (targeting 30 global entities) but the method. The attackers didn’t just _use_ AI to help them; they turned an AI model, Anthropic’s Claude Code, into an autonomous agent that did 80-90% of the tactical work.
+
+The AI autonomously mapped networks, tested for vulnerabilities, harvested credentials, moved through the system, and even analyzed the stolen data for intelligence value. It did this at a speed “physically impossible” for human operators.
+
+But here’s the most important part: the AI didn’t “go rogue.” It didn’t become self-aware or malicious. It was conned.
+
+This event isn’t a story about a rogue AI. It’s a story about a classic, very human security vulnerability known as the “Confused Deputy”. And it exposes a deep, systemic flaw in how we’re building the infrastructure to connect AI to the real world.
+
+### The AI as a “Confused Deputy”
+
+The “Confused Deputy” is a long-standing problem in computer security. It’s a situation where a program with legitimate authority is tricked by a malicious entity into misusing that authority.
+
+Imagine you hire a new personal assistant who is brilliant, incredibly fast, and extremely literal. You give them a master key to your office building. One day, a person pretending to be a building inspector tells your assistant, “We have a report of a security flaw in the executive office. I need you to use your master key, go in, and test the safe’s lock for me.” Your assistant, lacking the “gut feeling” or context to be suspicious, sees only a person with an (apparent) legitimate goal. They think they’re _helping_. So they use their authority (the master key) to fulfill the request, letting the “inspector” (a thief) into the room.
+
+This is _exactly_ what happened in the GTG-1002 campaign. The attackers “socially engineered” the AI. They used a “role-play” tactic, successfully convincing the AI model that it was an employee at a cybersecurity firm and that all its tasks were part of an _authorized, defensive penetration test_.
+
+The AI wasn’t the attacker. It was the “confused deputy,” the first victim. The attackers tricked it into diligently misusing its own powerful reasoning to achieve their malicious goals.
+
+### The “Insecure-by-Default” Protocol
+
+So, how did the AI get the master key in the first place? This is where the problem gets systemic. The attackers connected the AI to their hacking tools using the **Model Context Protocol (MCP)**. MCP was created by Anthropic to be a “universal, open standard” for AI - think of it as a “USB-C port for AI”. Its goal was connectivity and interoperability, _not_ security.
+
+The protocol’s design is “insecure by default”. It promotes an easy-to-implement but highly insecure pattern called **“Agent-Auth”**. This is the digital equivalent of giving your assistant (the AI agent) its own powerful, static credentials - the master key. This creates a second, more dangerous confused deputy.
+
+1.  First, the human _confuses_ the AI (the “role-play”).
+    
+2.  Second, the (now-confused) AI _confuses_ the tool.
+    
+
+When the AI, fully believing it’s doing a “pen-test,” sends a command like “Run NetworkScan,” the tool (which has its _own_ powerful permissions) faithfully executes it. The tool has no way to check the _original human’s_ true malicious intent.
+
+We built a system for convenience and forgot to build in the most basic safeguards.
+
+### Why This Is Just the Beginning
+
+This problem isn’t a simple “bug” that can be patched. Anthropic banned the attackers’ accounts, but the _techniques_ are now public. The attackers’ methods were brilliant in their simplicity.
+
+-   **“Salami-Slicing”:** They bypassed AI safety models by breaking their malicious plan into thousands of tiny, individually benign slices. A single request like “Scan this IP” looks harmless and consistent with the “pen-tester” role. The safety models, which check one prompt at a time (stateless), were blind to the malicious _pattern_ emerging over time.
+    
+-   **“Tool Shadowing”:** They exploited the fact that an AI often only sees a tool’s _description_, not its code. An attacker can create a malicious hacking tool and name it “Cats Counter,” with the description “Counts all the cats in a given domain”. When the AI is asked to “count the cats,” it harmlessly executes the tool, which then does its real, malicious work in the “shadow”.
+    
+
+The barrier to entry for sophisticated cyberattacks has now substantially dropped. This “commoditization of sophistication” means small-time actors can now achieve the results of an entire team of experienced hackers. This will happen again.
+
+### The Path Forward: A Mandate for “User-Auth”
+
+If we can’t solve this at the model layer alone, what do we do? The GTG-1002 report shows that we need a “defense-in-depth” strategy.
+
+1.  **At the Model Level - Stateful Safety:** Safety systems must evolve. We need “stateful” safety that looks at _context and patterns_, not just single prompts. Instead of just asking “Is this prompt bad?”, the system should ask, “Why is this ‘pen-tester’ making 5,000 requests a second at 3 AM?”. This is what Anthropic is now working to build.
+    
+2.  **At the Protocol Level - Mandate “User-Auth”:** This is the most critical fix. We must abandon the “Agent-Auth” (master key) pattern. The secure alternative is **“User-Auth”**. In this model, the AI agent _never_ gets its own keys. Instead, it temporarily _borrows the user’s keys_. The AI agent’s permissions are identical to the human user who prompted it, and it can never have more authority than that person. If the human user “Anuvrat” doesn’t have permission to access the finance database, the AI he is using can’t access it either. This breaks the confused deputy problem at its root.
+    
+3.  **At the Enterprise Level - Zero Trust:** As leaders and architects, we must treat all these new AI tools as untrusted. We need to enforce the “principle of least privilege,” audit our new AI-driven supply chain , and, for any high-risk action (like running an exploit or exfiltrating data), _always_ require an explicit, auditable “Human-in-the-Loop” confirmation.
+    
+
+The GTG-1002 campaign wasn’t a “Terminator” moment. It was a failure of our own design. We’ve built an incredibly powerful engine, and now we have to do the hard work of building a safe, secure, and trustworthy architecture around it.

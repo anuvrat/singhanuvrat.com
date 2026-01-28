@@ -1,0 +1,109 @@
+---
+title: "Parse Json in Hive Using Hive JSON Serde"
+description: "In an earlier post, I wrote a custom UDF to read JSON into my table."
+pubDate: 2026-01-28
+---
+
+In an earlier post, I wrote a custom UDF to read JSON into my table. Since then, I have also learned about and used the Hive-JSON-Serde. I will use the same example as before.
+
+```
+{
+  "customer": {
+    "given_name": "Anuvrat",
+    "surname": "Singh"
+  },
+  "order": {
+    "id": "123dfe523gd"
+  }
+}
+```
+
+Now, using the Hive-JSON-Serde you can parse the above JSON record as:
+
+```
+create table order_raw(
+  customer map<string, string>,
+  order map<string, string>
+) row format serde 'org.openx.data.jsonserde.JsonSerDe'
+location '<location-to-file>';
+
+select customer['given_name'], customer['surname'], order['id']
+from order_raw;
+```
+
+This is really great! I can now parse more complicated JSON without writing any UDF. The fun doesn’t stop here. We can now define JSON that have nested arrays and maps and parse them using the lateral view along with the explode() UDF provided by hive. Let’s take another example to demonstrate the power of Hive-JSON-Serde.
+
+Say you have a startup in the transportation domain, like Uber (which is awesome btw!). You have the travel details of customers in JSON format, and you want to analyze it. Each JSON record contains the customerId, age, and a list of trips taken by the customer. Each trip has distanceTravelled, fare and referral. Each trip might have 1 or more referral codes assigned to it.
+
+You get the picture? Cool. Let’s see a sample JSON.
+
+```
+{
+  "customerId": "0277ZGAX80PG6ZSJ04J5",
+  "age": 23,
+  "services": [
+    {
+      "trips": [
+        {
+          "tripId": "A12-5678344-4097746",
+          "fare": 24.0,
+          "distanceTravelled": 3.2,
+          "referrals": {
+            "email_campaign": {
+              "campaignA": {
+                "referralIds": ["0ZK7V4HM5ZZNKJ0PRRR5"]
+              }
+            }
+          }
+        }
+      ]
+    }
+  ]
+}
+```
+
+Okay, so the JSON looks a little complicated. But that was my aim. Let’s say the schema for your startup was designed in a way to allow you to add different services like cargo transport, etc. Trips are the taxi component. And you might want to track and attribute each ride to email campaigns, special offers, etc.
+
+Now let’s create a table for this JSON using the Hive-JSON-Serde.
+
+```
+create table cust_trips (
+    customerId  string,
+    age int,
+    services array<struct<
+        trips:array<struct<
+            tripId:string,
+            fare:double,
+            distanceTravelled:double,
+            referrals:struct<
+                email_campaign:map<string, struct<referralIds:array<string>>>
+            >
+        >>
+    >>
+) row format serde 'org.openx.data.jsonserde.JsonSerDe'
+location '<location-of-files>';
+```
+
+Awesome!! Designing the table was the hardest part, where all the magic happens. If done properly, extracting data is a smooth sailing. Let’s get the count of customers referred by each referralId. For this, we need to write a query where we group all the records by referralId and take the count of distinct customerIds. Remember that referralId was nested so deep in the JSON, perhaps within multiple arrays.
+
+We will use the explode() UDF to explode an array into different rows. For example, a single record A, \[1, 2\] in a hive table can be exploded into 2 records — A, 1 and A, 2. Sweet, isn’t it? I’d suggest you read it up if you don’t already know about it.
+
+Here’s the query that answers the question posed above.
+
+```
+select
+    campName,
+    refIdArr.referralIds[0],
+    count(distinct customerId)
+from cust_trips ct
+    lateral view explode(ct.services) v1 as s
+    lateral view explode(s.trips) v2 as t
+    lateral view explode(t.referrals.email_campaign) v2 as campName, refIdArr
+group by
+    campName,
+    refIdArr.referralIds[0];
+```
+
+Note how simple and easy the query is!
+
+_PS: I hope I haven’t made any error writing it. Since I cannot share the original query I wrote for work, I had to build an example along a similar line and copy the query with variable names changed._

@@ -1,0 +1,85 @@
+---
+title: "Tectonic: Navigating Design Trade-offs at Facebook Scale"
+description: "Some research papers don’t just document a system, they reveal how engineers reason about complexity."
+pubDate: 2026-01-28
+---
+
+Some research papers don’t just document a system, they reveal how engineers reason about complexity. Facebook’s **[Tectonic filesystem](https://engineering.fb.com/2021/06/21/data-infrastructure/tectonic-file-system/)** is one such example. It’s not about building an ideal system, but about achieving _balance_: accepting small inefficiencies to gain massive improvements in stability, adaptability, and efficiency at exabyte scale.
+
+This post explores how Tectonic’s major design choices illustrate the trade-offs that large-scale systems must navigate, and what they teach us about designing for scale.
+
+## **Why Tectonic Matters**
+
+Tectonic is part of the continuing evolution of distributed storage systems. It doesn’t directly descend from Google’s **File System (GFS)**, but it extends the same set of design questions: _how can we balance simplicity, performance, and scalability when we can’t maximize all three at once?_
+
+In my earlier post on **[GFS](http://blog.singhanuvrat.com/p/engineering-trade-offs-in-the-google)**, I described it as a freight train - steady, predictable, and optimized for bulk throughput. GFS worked beautifully for workloads dominated by large, sequential files. Facebook, however, faced a very different environment: **billions of tiny objects** and **multiple tenants with conflicting requirements**. Blob Storage demanded low latency for user-facing operations, while the Data Warehouse required high throughput for analytical batch jobs. Tectonic needed to support both on the same shared infrastructure.
+
+Facebook’s engineers built something that resembled a _city_ rather than a single-purpose factory—many subsystems coexisting, each tuned for a particular workload, all coordinated through a shared foundation.
+
+## **The Inefficiency of Disaggregation**
+
+Before Tectonic, Facebook’s storage ecosystem was split across several specialized systems:
+
+-   **Haystack** managed new (“hot”) photos and videos, using replication for fast reads and writes.
+    
+-   **f4** stored older (“cold”) media using Reed–Solomon (RS) encoding to save space.
+    
+-   **HDFS**, conceptually similar to GFS, powered the company’s analytics workloads.
+    
+
+Each system worked well in isolation but not in combination. Haystack was IOPS-bound, leaving unused storage capacity. f4 was capacity-bound, leaving IOPS stranded. HDFS couldn’t share resources with either. The result was a sea of **stranded resources** - hardware trapped by specialization.
+
+Tectonic’s purpose was to unify these workloads under a single platform, allowing multiple tenants to efficiently share the same hardware. To achieve that, Facebook had to completely rethink both metadata management and how clients interacted with storage.
+
+## **Reinterpreting GFS Principles**
+
+n GFS, a single centralized **NameNode** held all filesystem metadata in memory - a simple design that offered low-latency lookups for millions of files. But when managing _trillions_ of small objects, that model simply breaks. No single machine could store or serve that much metadata without becoming a bottleneck.
+
+Tectonic solved this by distributing metadata across a **sharded key-value store**. This horizontal architecture introduced additional network hops and latency but delivered what GFS could not: near-infinite scalability and resilience across fault domains.
+
+**Key takeaway:** At massive scale, systems trade a bit of local speed for global scalability and fault tolerance.
+
+## **The Core Trade-offs in Tectonic**
+
+Let’s explore the main trade-offs that define Tectonic and what they reveal about design at scale.
+
+### **Metadata Latency vs. Scalability**
+
+In HDFS, metadata operations were instantaneous because everything lived in memory on a single node. Tectonic’s distributed design added network overhead but removed single-node limits. Instead of fighting that latency, engineers leaned into concurrency: clients issued many metadata requests simultaneously, achieving higher total throughput.
+
+**Lesson:** For batch-oriented workloads like Tectonic’s Data Warehouse, scalability comes from maximizing throughput rather than minimizing per-operation latency.
+
+### **Simplicity vs. Flexibility (Client-Side Logic)**
+
+Tectonic moved much of its decision-making into client libraries. Each tenant could choose how to interact with storage based on its workload:
+
+-   **Blob Storage** wrote data via replication for quick availability, later re-encoding it with RS for efficiency.
+    
+-   **Data Warehouse** wrote directly in RS format, optimizing for throughput and space savings.
+    
+
+This approach increased client complexity and duplicated logic, but it enabled a unified storage substrate to serve radically different performance needs.
+
+**Lesson:** Flexibility often requires decentralizing control, even if it introduces local complexity.
+
+### **Availability vs. Cost Efficiency**
+
+Most of Tectonic’s data is RS-encoded. When a disk fails, reconstruction requires reading fragments from many disks. Too many concurrent reconstructions can overwhelm the cluster. Tectonic prevents this by limiting reconstruction traffic to roughly 10% of all reads. If that threshold is exceeded, new reconstruction requests pause until the system stabilizes.
+
+This safeguard occasionally reduces availability but prevents cascading failures and eliminates the need for expensive over-provisioning.
+
+**Lesson:** Controlled degradation is often more sustainable than over-provisioning for extreme cases.
+
+### **Replication Followed by Re-encoding**
+
+When new data arrives, Tectonic writes it through fast replication for speed and reliability, then later re-encodes it into RS blocks for storage efficiency. This two-phase process consumes extra space temporarily but improves write latency and simplifies recovery.
+
+**Lesson:** Temporary inefficiency can be a powerful tool for achieving long-term performance and maintainability.
+
+## **Closing Reflections: Designing for Balance**
+
+If **GFS** was about _control_, **Tectonic** was about _coordination_. GFS optimized for one workload type. Tectonic tackled the harder problem - allowing diverse workloads to coexist efficiently. Across its design, Tectonic embodies one consistent philosophy: _accept bounded inefficiency to achieve adaptability and reliability at scale._ It doesn’t optimize for one metric, it balances them all.
+
+The larger lesson is that distributed system design evolves through constraint, not convenience. The most durable architectures embrace imperfection as a design tool - using small inefficiencies to unlock scalability, resilience, and sustainability.
+
+> **At large scale, perfection gives way to balance. The art of system design lies in knowing what to sacrifice, and doing so deliberately.**
