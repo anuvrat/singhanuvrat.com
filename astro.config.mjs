@@ -3,6 +3,9 @@ import { defineConfig } from 'astro/config';
 import mdx from '@astrojs/mdx';
 import vercel from '@astrojs/vercel';
 
+import codeLightTheme from './src/themes/code-light.json';
+import codeDarkTheme from './src/themes/code-dark.json';
+
 // https://astro.build/config
 export default defineConfig({
   site: 'https://singhanuvrat.com',
@@ -11,7 +14,10 @@ export default defineConfig({
   adapter: vercel(),
   markdown: {
     shikiConfig: {
-      theme: 'github-dark',
+      themes: {
+        light: codeLightTheme,
+        dark: codeDarkTheme,
+      },
       wrap: true,
     },
   },

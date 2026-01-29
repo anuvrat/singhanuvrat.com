@@ -153,6 +153,20 @@ pre code {
   font-size: var(--text-sm);
 }
 
+/* Shiki dual theme - light mode by default */
+pre.shiki,
+pre.shiki span {
+  color: var(--shiki-light) !important;
+  background-color: var(--shiki-light-bg) !important;
+}
+
+/* Dark mode code highlighting */
+html.dark pre.shiki,
+html.dark pre.shiki span {
+  color: var(--shiki-dark) !important;
+  background-color: var(--shiki-dark-bg) !important;
+}
+
 /* Lists */
 ul, ol {
   margin-top: var(--space-md);
