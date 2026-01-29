@@ -21,7 +21,7 @@ interface Props {
   allPosts: CollectionEntry<'posts'>[];
 }
 
-const { title, description, pubDate, updatedDate, body, ogImage, currentPost, allPosts } = Astro.props;
+const { title, description, pubDate, updatedDate, headings, body, ogImage, currentPost, allPosts } = Astro.props;
 
 // Difficulty display mapping
 const difficultyLabels: Record<string, string> = {
@@ -59,7 +59,7 @@ const relatedPosts = findRelatedPosts(currentPost, allPosts, 3);
     ogImage={finalOgImage}
   />
 
-  <TocDots headings={Astro.props.headings} />
+  <TocDots headings={headings} />
 
   <article class="post">
     <div class="post-layout">

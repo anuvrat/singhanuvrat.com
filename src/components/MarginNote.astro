@@ -9,7 +9,7 @@ interface Props {
 }
 
 const { id } = Astro.props;
-const noteId = id || `note-${Math.random().toString(36).substr(2, 9)}`;
+const noteId = id || `note-${Math.random().toString(36).slice(2, 11)}`;
 
 // Auto-increment counter per page (resets when page path changes)
 const globalKey = Symbol.for('margin-note-counter');
