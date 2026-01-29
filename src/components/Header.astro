@@ -86,6 +86,10 @@ const { showTagline = true } = Astro.props;
   }
 
   @media (max-width: 640px) {
+    .header-content {
+      gap: var(--space-sm);
+    }
+
     .site-title {
       font-size: var(--text-lg);
     }
@@ -94,12 +98,27 @@ const { showTagline = true } = Astro.props;
       font-size: 0.7rem;
     }
 
+    .header-right {
+      gap: var(--space-sm);
+    }
+
     .nav-links {
       gap: var(--space-sm);
     }
 
     .nav-links a {
       font-size: 0.75rem;
+    }
+  }
+
+  /* Very narrow screens - hide tagline to prevent crowding */
+  @media (max-width: 400px) {
+    .tagline {
+      display: none;
+    }
+
+    .header-left {
+      gap: 0;
     }
   }
 </style>
