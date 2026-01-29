@@ -36,6 +36,8 @@ src/
 │   ├── MarginNote.astro       # Sidenotes with auto-numbering
 │   ├── ThemeToggle.astro      # Dark/light mode switch
 │   ├── RelatedPosts.astro     # Tag-aware related posts
+│   ├── SeriesNav.astro        # Prev/next navigation for series posts
+│   ├── TocDots.astro          # Progress dots for table of contents
 │   ├── ArticleSchema.astro    # JSON-LD for blog posts
 │   ├── PersonSchema.astro     # JSON-LD for author (About page)
 │   └── WebsiteSchema.astro    # JSON-LD for site (homepage)
@@ -62,17 +64,31 @@ src/
 
 ## Writing Posts
 
-Posts are MDX files in `src/content/posts/`. Frontmatter:
+### Quick Add Workflow
+
+1. Create a new `.mdx` file in `src/content/posts/` with just title and content
+2. Run `/prepare-post` — Claude will:
+   - Rename the file to an SEO-friendly slug
+   - Generate description, tags, difficulty level
+   - Determine series membership (if applicable)
+   - Review collection for consistency
+   - Propose any taxonomy/series reorganization
+   - Commit the changes
+
+### Frontmatter Schema
 
 ```yaml
 ---
 title: "Post Title"
 description: "Meta description for SEO and previews"
 pubDate: 2025-01-27
-updatedDate: 2025-01-28  # Optional, shows if >7 days after pubDate
-draft: false              # Optional, hides from production if true
-tags: ["distributed-systems", "paper-analysis"]  # For related posts
-ogImage: /custom-og.png   # Optional, overrides auto-generated
+updatedDate: 2025-01-28    # Optional, shows if >7 days after pubDate
+draft: false                # Optional, hides from production if true
+tags: ["distributed-systems", "paper-analysis"]
+difficulty: "deep-dive"     # intro | intermediate | deep-dive
+series: "google-infrastructure"  # Optional, for multi-part series
+seriesOrder: 2              # Optional, position in series
+ogImage: /custom-og.png     # Optional, overrides auto-generated
 ---
 ```
 
@@ -88,6 +104,20 @@ ogImage: /custom-og.png   # Optional, overrides auto-generated
 - `paper-analysis` — Analysis of research papers
 - `deep-dive` — In-depth technical exploration
 - `tutorial` — How-to content
+- `architecture` — System design, trade-offs
+
+### Difficulty Levels
+
+- **intro** — Accessible to anyone with basic tech background
+- **intermediate** — Assumes domain familiarity, practical experience helps
+- **deep-dive** — Assumes significant expertise, academic or production-level depth
+
+### Series
+
+Current series:
+- `google-infrastructure`: GFS → Bigtable → Spanner (Google's storage evolution)
+
+Series posts show navigation (prev/next) instead of related posts.
 
 ### Using Margin Notes
 
