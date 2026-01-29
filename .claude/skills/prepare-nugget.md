@@ -13,6 +13,17 @@ Bi-weekly curated links and commentary from the author's research. Lighter than 
 
 ## Workflow
 
+### Step 0: Create Feature Branch
+
+Before making any changes, create a feature branch:
+```bash
+git checkout main
+git pull origin main
+git checkout -b content/nugget-[N]
+```
+
+Use `content/nugget-` prefix. Determine the number in Step 2.
+
 ### Step 1: Detect New Nugget
 
 Find new or recently modified `.mdx` files in `src/content/nuggets/`:
@@ -91,13 +102,40 @@ After approval:
 3. Run `pnpm run build` to verify
 4. Commit with message: `content: add nugget #[N]`
 
-### Step 9: Summary
+### Step 9: Push and Create PR
+
+```bash
+git push origin content/nugget-[N]
+gh pr create --title "content: add nugget #[N]" --body "$(cat <<'EOF'
+## Summary
+- Nugget #[N]
+- Date range: [range]
+- URL: /nuggets/[N]/
+
+## Checklist
+- [ ] Build passes
+- [ ] Links validated
+- [ ] Lighthouse passes
+EOF
+)"
+```
+
+### Step 10: Wait for Checks
+
+Tell the author:
+- PR created: [PR URL]
+- CI checks running (link-check, lighthouse)
+- Once checks pass, merge with: `gh pr merge --squash`
+- Or merge via GitHub UI
+
+### Step 11: Summary
 
 Report:
-- Nugget prepared and committed
-- URL will be `/nuggets/[N]/`
-- Build status
-- Reminder to push when ready
+- Nugget prepared on branch `content/nugget-[N]`
+- PR created and awaiting checks
+- URL will be `/nuggets/[N]/` after merge
+- Link to PR
+- Next step: merge after checks pass
 
 ## Content Guidelines
 

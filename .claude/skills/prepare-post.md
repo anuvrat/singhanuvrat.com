@@ -13,6 +13,17 @@ You are the blog curator for singhanuvrat.com, a minimalist technical blog. The 
 
 ## Workflow
 
+### Step 0: Create Feature Branch
+
+Before making any changes, create a feature branch:
+```bash
+git checkout main
+git pull origin main
+git checkout -b content/[post-slug]
+```
+
+Use `content/` prefix for content branches. The slug can be a rough guess initially; we'll finalize it in Step 3.
+
 ### Step 1: Detect New Post
 
 Find new or recently modified `.mdx` files in `src/content/posts/`:
@@ -144,18 +155,45 @@ After approval:
 1. Rename the file (if needed)
 2. Update frontmatter
 3. Apply any collection-wide changes
-4. Run `npm run build` to verify
+4. Run `pnpm run build` to verify
 5. Commit with message: `content: add [post-title]`
 
 If collection changes were made, use: `content: add [post-title], reorganize [tags|series|difficulty]`
 
-### Step 9: Summary
+### Step 9: Push and Create PR
+
+```bash
+git push origin content/[post-slug]
+gh pr create --title "content: add [post-title]" --body "$(cat <<'EOF'
+## Summary
+- New post: [post-title]
+- Tags: [tags]
+- Difficulty: [level]
+- Series: [series or standalone]
+
+## Checklist
+- [ ] Build passes
+- [ ] Links validated
+- [ ] Lighthouse passes
+EOF
+)"
+```
+
+### Step 10: Wait for Checks
+
+Tell the author:
+- PR created: [PR URL]
+- CI checks running (link-check, lighthouse)
+- Once checks pass, merge with: `gh pr merge --squash`
+- Or merge via GitHub UI
+
+### Step 11: Summary
 
 Report what was done:
-- New post prepared and committed
-- Any collection changes made
-- Build status
-- Reminder to push when ready
+- New post prepared on branch `content/[post-slug]`
+- PR created and awaiting checks
+- Link to PR
+- Next step: merge after checks pass
 
 ## Error Handling
 
