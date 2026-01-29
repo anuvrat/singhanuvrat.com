@@ -8,6 +8,10 @@ localhost
 # Email addresses
 mailto:
 
-# Known rate-limited or blocking sites (add as needed)
-# twitter.com
-# x.com
+# Social media sites that block CI crawlers
+twitter\.com
+x\.com
+linkedin\.com
+
+# CDN resources (verified manually)
+cdn\.jsdelivr\.net

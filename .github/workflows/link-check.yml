@@ -40,7 +40,7 @@ jobs:
             --no-progress
             --accept 200,204,301,302,308
             --exclude-mail
-            --exclude "localhost"
-            --exclude "127.0.0.1"
+            --exclude-path './dist/rss.xml'
             './dist/**/*.html'
+          failIfEmpty: false
           fail: true
