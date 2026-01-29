@@ -169,6 +169,13 @@ const canonicalURL = new URL(Astro.url.pathname, Astro.site);
     opacity: 1;
   }
 
+  /* Always show copy button on touch devices */
+  @media (hover: none) {
+    .copy-button {
+      opacity: 0.7;
+    }
+  }
+
   .copy-button:hover {
     color: var(--text);
   }

@@ -115,6 +115,14 @@ p {
   margin-top: var(--space-lg);  /* 1.5rem - more breathing room */
 }
 
+/* Remove top margin from first paragraph after headings */
+h1 + p,
+h2 + p,
+h3 + p,
+h4 + p {
+  margin-top: var(--space-md);
+}
+
 a {
   color: var(--accent);
   text-decoration: none;
@@ -185,6 +193,29 @@ blockquote {
 
 blockquote p:first-child {
   margin-top: 0;
+}
+
+/* Tables */
+table {
+  width: 100%;
+  margin-top: var(--space-lg);
+  border-collapse: collapse;
+  font-size: var(--text-sm);
+}
+
+th, td {
+  padding: var(--space-sm) var(--space-md);
+  text-align: left;
+  border-bottom: 1px solid var(--border);
+}
+
+th {
+  font-weight: 700;
+  color: var(--text);
+}
+
+tr:hover {
+  background-color: var(--bg-secondary);
 }
 
 /* Images */
