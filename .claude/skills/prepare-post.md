@@ -13,17 +13,6 @@ You are the blog curator for singhanuvrat.com, a minimalist technical blog. The 
 
 ## Workflow
 
-### Step 0: Create Feature Branch
-
-Before making any changes, create a feature branch:
-```bash
-git checkout main
-git pull origin main
-git checkout -b content/[post-slug]
-```
-
-Use `content/` prefix for content branches. The slug can be a rough guess initially; we'll finalize it in Step 3.
-
 ### Step 1: Detect New Post
 
 Find new or recently modified `.mdx` files in `src/content/posts/`:
@@ -160,39 +149,25 @@ After approval:
 
 If collection changes were made, use: `content: add [post-title], reorganize [tags|series|difficulty]`
 
-### Step 9: Push, Create PR, and Enable Auto-merge
+### Step 9: Push to Main
 
 ```bash
-git push origin content/[post-slug]
-gh pr create --title "content: add [post-title]" --body "$(cat <<'EOF'
-## Summary
-- New post: [post-title]
-- Tags: [tags]
-- Difficulty: [level]
-- Series: [series or standalone]
-EOF
-)"
-gh pr merge --auto --squash
+git push origin main
 ```
 
-The `--auto` flag enables auto-merge: the PR will merge automatically once all required checks pass.
+This triggers the CI pipeline:
+1. Build
+2. Link check (validates all URLs)
+3. Lighthouse (performance/accessibility)
+4. Deploy to Vercel (only if all checks pass)
 
-### Step 10: Confirm Auto-merge
-
-Tell the author:
-- PR created: [PR URL]
-- Auto-merge enabled
-- CI checks running (link-check, lighthouse)
-- Will merge automatically when checks pass
-- Post will be live ~2-3 minutes after checks complete
-
-### Step 11: Summary
+### Step 10: Summary
 
 Report what was done:
-- New post prepared on branch `content/[post-slug]`
-- PR created and awaiting checks
-- Link to PR
-- Next step: merge after checks pass
+- New post prepared and pushed to main
+- CI pipeline triggered
+- Post will be live in ~3-4 minutes (after checks pass)
+- If checks fail, deployment is blocked — fix issues and push again
 
 ## Error Handling
 

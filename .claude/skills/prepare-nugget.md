@@ -13,17 +13,6 @@ Bi-weekly curated links and commentary from the author's research. Lighter than 
 
 ## Workflow
 
-### Step 0: Create Feature Branch
-
-Before making any changes, create a feature branch:
-```bash
-git checkout main
-git pull origin main
-git checkout -b content/nugget-[N]
-```
-
-Use `content/nugget-` prefix. Determine the number in Step 2.
-
 ### Step 1: Detect New Nugget
 
 Find new or recently modified `.mdx` files in `src/content/nuggets/`:
@@ -102,39 +91,26 @@ After approval:
 3. Run `pnpm run build` to verify
 4. Commit with message: `content: add nugget #[N]`
 
-### Step 9: Push, Create PR, and Enable Auto-merge
+### Step 9: Push to Main
 
 ```bash
-git push origin content/nugget-[N]
-gh pr create --title "content: add nugget #[N]" --body "$(cat <<'EOF'
-## Summary
-- Nugget #[N]
-- Date range: [range]
-- URL: /nuggets/[N]/
-EOF
-)"
-gh pr merge --auto --squash
+git push origin main
 ```
 
-The `--auto` flag enables auto-merge: the PR will merge automatically once all required checks pass.
+This triggers the CI pipeline:
+1. Build
+2. Link check (validates all URLs)
+3. Lighthouse (performance/accessibility)
+4. Deploy to Vercel (only if all checks pass)
 
-### Step 10: Confirm Auto-merge
-
-Tell the author:
-- PR created: [PR URL]
-- Auto-merge enabled
-- CI checks running (link-check, lighthouse)
-- Will merge automatically when checks pass
-- Nugget will be live ~2-3 minutes after checks complete
-
-### Step 11: Summary
+### Step 10: Summary
 
 Report:
-- Nugget prepared on branch `content/nugget-[N]`
-- PR created and awaiting checks
-- URL will be `/nuggets/[N]/` after merge
-- Link to PR
-- Next step: merge after checks pass
+- Nugget prepared and pushed to main
+- CI pipeline triggered
+- URL will be `/nuggets/[N]/`
+- Nugget will be live in ~3-4 minutes (after checks pass)
+- If checks fail, deployment is blocked — fix issues and push again
 
 ## Content Guidelines
 
