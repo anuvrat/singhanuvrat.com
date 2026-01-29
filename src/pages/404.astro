@@ -1,0 +1,52 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+---
+
+<BaseLayout title="Page Not Found — Anuvrat" description="The page you're looking for doesn't exist.">
+  <div class="not-found">
+    <h1>404</h1>
+    <p>The page you're looking for doesn't exist.</p>
+    <nav class="nav-links">
+      <a href="/">← Back to Home</a>
+      <a href="/nuggets/">Nuggets</a>
+      <a href="/about/">About</a>
+    </nav>
+  </div>
+</BaseLayout>
+
+<style>
+  .not-found {
+    max-width: var(--content-width);
+    text-align: center;
+    padding: var(--space-2xl) 0;
+  }
+
+  h1 {
+    font-size: 6rem;
+    color: var(--text-muted);
+    margin-bottom: var(--space-md);
+    line-height: 1;
+  }
+
+  p {
+    color: var(--text-muted);
+    margin-bottom: var(--space-xl);
+  }
+
+  .nav-links {
+    display: flex;
+    justify-content: center;
+    gap: var(--space-lg);
+    flex-wrap: wrap;
+  }
+
+  .nav-links a {
+    color: var(--accent);
+    text-decoration: none;
+  }
+
+  .nav-links a:hover {
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+</style>
