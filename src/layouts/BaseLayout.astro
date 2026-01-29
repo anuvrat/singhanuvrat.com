@@ -137,6 +137,54 @@ const canonicalURL = new URL(Astro.url.pathname, Astro.site);
         });
       }
     </script>
+
+    <!-- Reading position memory -->
+    <script>
+      function initReadingPosition() {
+        const postContent = document.querySelector('.post-content');
+        if (!postContent) return;
+
+        const key = `reading-pos:${window.location.pathname}`;
+        const minScroll = 200;
+        let saveTimeout: ReturnType<typeof setTimeout>;
+
+        // Restore position (only on initial load, not view transitions)
+        if (!document.documentElement.dataset.transitioned) {
+          const saved = localStorage.getItem(key);
+          if (saved) {
+            const pos = parseInt(saved, 10);
+            if (pos > minScroll) {
+              setTimeout(() => window.scrollTo(0, pos), 0);
+            }
+          }
+        }
+
+        // Save position on scroll (debounced)
+        const scrollHandler = () => {
+          clearTimeout(saveTimeout);
+          saveTimeout = setTimeout(() => {
+            const scrollY = window.scrollY;
+            const docHeight = document.documentElement.scrollHeight;
+            const windowHeight = window.innerHeight;
+            const atBottom = scrollY + windowHeight >= docHeight - 50;
+
+            if (atBottom) {
+              localStorage.removeItem(key);
+            } else if (scrollY > minScroll) {
+              localStorage.setItem(key, String(scrollY));
+            }
+          }, 300);
+        };
+
+        window.addEventListener('scroll', scrollHandler, { passive: true });
+      }
+
+      initReadingPosition();
+      document.addEventListener('astro:after-swap', () => {
+        document.documentElement.dataset.transitioned = 'true';
+        initReadingPosition();
+      });
+    </script>
   </body>
 </html>
 
