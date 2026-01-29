@@ -19,7 +19,7 @@ const postsByYear = posts.reduce((acc, post) => {
 const years = Object.keys(postsByYear).map(Number).sort((a, b) => b - a);
 ---
 
-<BaseLayout title="Anuvrat — Thinking in systems">
+<BaseLayout title="Anuvrat — Thinking in systems" description="Thoughts on distributed systems, infrastructure, and the engineering trade-offs that shape how we build resilient, scalable systems.">
   <WebsiteSchema />
   <div class="post-list">
     {years.map((year) => (

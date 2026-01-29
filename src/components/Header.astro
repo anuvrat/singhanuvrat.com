@@ -58,8 +58,12 @@ const { showTagline = true } = Astro.props;
   }
 
   @media (max-width: 640px) {
+    .site-title {
+      font-size: var(--text-lg);
+    }
+
     .tagline {
-      display: none;
+      font-size: 0.7rem;
     }
   }
 </style>
