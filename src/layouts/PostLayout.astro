@@ -92,8 +92,11 @@ const relatedPosts = findRelatedPosts(currentPost, allPosts, 3);
         </div>
 
         <footer class="post-footer">
-          <SeriesNav currentPost={currentPost} allPosts={allPosts} />
-          <RelatedPosts posts={relatedPosts} />
+          {currentPost.data.series ? (
+            <SeriesNav currentPost={currentPost} allPosts={allPosts} />
+          ) : (
+            <RelatedPosts posts={relatedPosts} />
+          )}
         </footer>
       </div>
 
