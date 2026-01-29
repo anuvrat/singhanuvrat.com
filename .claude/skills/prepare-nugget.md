@@ -102,7 +102,7 @@ After approval:
 3. Run `pnpm run build` to verify
 4. Commit with message: `content: add nugget #[N]`
 
-### Step 9: Push and Create PR
+### Step 9: Push, Create PR, and Enable Auto-merge
 
 ```bash
 git push origin content/nugget-[N]
@@ -111,22 +111,21 @@ gh pr create --title "content: add nugget #[N]" --body "$(cat <<'EOF'
 - Nugget #[N]
 - Date range: [range]
 - URL: /nuggets/[N]/
-
-## Checklist
-- [ ] Build passes
-- [ ] Links validated
-- [ ] Lighthouse passes
 EOF
 )"
+gh pr merge --auto --squash
 ```
 
-### Step 10: Wait for Checks
+The `--auto` flag enables auto-merge: the PR will merge automatically once all required checks pass.
+
+### Step 10: Confirm Auto-merge
 
 Tell the author:
 - PR created: [PR URL]
+- Auto-merge enabled
 - CI checks running (link-check, lighthouse)
-- Once checks pass, merge with: `gh pr merge --squash`
-- Or merge via GitHub UI
+- Will merge automatically when checks pass
+- Nugget will be live ~2-3 minutes after checks complete
 
 ### Step 11: Summary
 
