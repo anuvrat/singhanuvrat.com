@@ -14,8 +14,11 @@ Personal blog for Anuvrat Singh at singhanuvrat.com. Built with Astro + MDX, dep
 - **Framework:** Astro 5.x with MDX
 - **Styling:** Vanilla CSS with CSS custom properties
 - **Fonts:** JetBrains Mono (self-hosted, Regular + Bold)
-- **Deployment:** Vercel (static output)
+- **Math:** KaTeX via remark-math + rehype-katex
+- **Diagrams:** Mermaid (client-side rendering with dark mode support)
+- **Syntax Highlighting:** Shiki with custom light/dark themes
 - **OG Images:** Auto-generated via satori + sharp
+- **Deployment:** Vercel (static output) with GitHub Actions CI
 
 ## Commands
 
@@ -28,38 +31,65 @@ pnpm run preview  # Preview production build
 ## Project Structure
 
 ```
-src/
-├── components/
-│   ├── Header.astro           # Site header with title and theme toggle
-│   ├── Footer.astro           # Footer with About and RSS links
-│   ├── PostCard.astro         # Post list item (title, description, date)
-│   ├── MarginNote.astro       # Sidenotes with auto-numbering
-│   ├── ThemeToggle.astro      # Dark/light mode switch
-│   ├── RelatedPosts.astro     # Tag-aware related posts
-│   ├── SeriesNav.astro        # Prev/next navigation for series posts
-│   ├── TocDots.astro          # Progress dots for table of contents
-│   ├── ArticleSchema.astro    # JSON-LD for blog posts
-│   ├── PersonSchema.astro     # JSON-LD for author (About page)
-│   └── WebsiteSchema.astro    # JSON-LD for site (homepage)
-├── layouts/
-│   ├── BaseLayout.astro       # HTML shell, meta tags, dark mode script
-│   └── PostLayout.astro       # Two-column post template with margin notes
-├── pages/
-│   ├── index.astro            # Homepage (posts grouped by year)
-│   ├── about.astro            # About page with PersonSchema
-│   ├── [...slug].astro        # Dynamic post routes
-│   ├── rss.xml.ts             # RSS feed
-│   ├── sitemap.xml.ts         # Dynamic sitemap
-│   └── og/[...slug].png.ts    # Auto-generated OG images
-├── content/
-│   ├── config.ts              # Content collection schema (with tags)
-│   └── posts/                 # MDX blog posts
-├── styles/
-│   └── global.css             # CSS variables, typography, themes
-└── utils/
-    ├── readingTime.ts         # Word count to reading time
-    ├── formatDate.ts          # Date formatting + constants
-    └── relatedPosts.ts        # Tag + keyword similarity algorithm
+.
+├── .claude/
+│   └── skills/                # Claude automation workflows
+│       ├── prepare-post.md    # Workflow for new blog posts
+│       └── prepare-nugget.md  # Workflow for bi-weekly nuggets
+├── .github/
+│   └── workflows/
+│       └── deploy.yml         # CI/CD: build → link-check → lighthouse → deploy
+├── docs/
+│   └── plans/                 # Design and implementation planning documents
+├── public/
+│   ├── fonts/                 # JetBrains Mono (woff2 + TTF)
+│   ├── favicon.svg
+│   └── robots.txt
+├── src/
+│   ├── components/
+│   │   ├── Header.astro           # Site header with title and theme toggle
+│   │   ├── Footer.astro           # Footer with About and RSS links
+│   │   ├── PostCard.astro         # Post list item (title, description, date)
+│   │   ├── MarginNote.astro       # Sidenotes with auto-numbering
+│   │   ├── ThemeToggle.astro      # Dark/light mode switch
+│   │   ├── RelatedPosts.astro     # Tag-aware related posts
+│   │   ├── SeriesNav.astro        # Prev/next navigation for series posts
+│   │   ├── TocDots.astro          # Progress dots for table of contents
+│   │   ├── Callout.astro          # Styled callout boxes (note, tip, warning, important)
+│   │   ├── PostImage.astro        # Image with lazy loading and optional caption
+│   │   ├── Mermaid.astro          # Mermaid diagram renderer with dark mode
+│   │   ├── ArticleSchema.astro    # JSON-LD for blog posts
+│   │   ├── PersonSchema.astro     # JSON-LD for author (About page)
+│   │   └── WebsiteSchema.astro    # JSON-LD for site (homepage)
+│   ├── layouts/
+│   │   ├── BaseLayout.astro       # HTML shell, meta tags, dark mode script
+│   │   └── PostLayout.astro       # Two-column post template with margin notes
+│   ├── pages/
+│   │   ├── index.astro            # Homepage (posts grouped by year)
+│   │   ├── about.astro            # About page with PersonSchema
+│   │   ├── 404.astro              # Custom 404 page
+│   │   ├── [...slug].astro        # Dynamic post routes
+│   │   ├── rss.xml.ts             # RSS feed
+│   │   ├── sitemap.xml.ts         # Dynamic sitemap
+│   │   ├── og/[...slug].png.ts    # Auto-generated OG images
+│   │   └── nuggets/
+│   │       ├── index.astro        # Nuggets list page
+│   │       └── [number].astro     # Individual nugget pages
+│   ├── content/
+│   │   ├── config.ts              # Content collection schema (posts + nuggets)
+│   │   └── posts/                 # MDX blog posts
+│   ├── styles/
+│   │   ├── global.css             # CSS variables, typography, themes
+│   │   ├── code-light.json        # Shiki light theme
+│   │   └── code-dark.json         # Shiki dark theme
+│   └── utils/
+│       ├── readingTime.ts         # Word count to reading time (200 WPM)
+│       ├── formatDate.ts          # Date formatting + UPDATED_THRESHOLD_MS (7 days)
+│       └── relatedPosts.ts        # Tag + keyword similarity algorithm
+├── astro.config.mjs               # Astro configuration
+├── tsconfig.json                  # TypeScript config with @components/* alias
+├── lighthouserc.cjs               # Lighthouse CI thresholds
+└── .lycheeignore                  # Link checker exclusions
 ```
 
 ## Writing Posts
@@ -123,13 +153,14 @@ Series posts show navigation (prev/next) instead of related posts.
 
 Curated links and commentary from research. Separate from posts.
 
-**Location:** `src/content/nuggets/`
+**Status:** Infrastructure ready (pages, collection schema), awaiting first content
+**Location:** `src/content/nuggets/` (create directory when adding first nugget)
 **URL:** `/nuggets/` (list) and `/nuggets/[number]/` (individual)
 
 ### Quick Add Workflow
 
-1. Create a new `.mdx` file in `src/content/nuggets/`
-2. Add content with links and commentary
+1. Create `src/content/nuggets/` directory if it doesn't exist
+2. Create a new `.mdx` file with content
 3. Run `/prepare-nugget` — Claude will assign number, dates, format
 
 ### Frontmatter Schema
@@ -156,10 +187,12 @@ Commentary with [integrated links](url) woven into prose.
 - [Article title](url) — Why it's worth reading
 ```
 
-### Using Margin Notes
+## MDX Components
+
+### Margin Notes
 
 Margin notes appear in the right margin on desktop, expand on mobile tap.
-Numbers auto-increment per page.
+Numbers auto-increment per page using `Symbol.for()` and `globalThis`.
 
 ```mdx
 import MarginNote from '../components/MarginNote.astro';
@@ -167,7 +200,31 @@ import MarginNote from '../components/MarginNote.astro';
 Some text here.<MarginNote>This appears in the right margin.</MarginNote>
 ```
 
-### Using Math (LaTeX)
+### Callouts
+
+Styled callout boxes for notes, tips, warnings, and important information.
+
+```mdx
+import Callout from '../components/Callout.astro';
+
+<Callout type="note">This is a note.</Callout>
+<Callout type="tip">This is a tip.</Callout>
+<Callout type="warning">This is a warning.</Callout>
+<Callout type="important">This is important.</Callout>
+```
+
+### Images
+
+Optimized images with lazy loading and optional captions.
+
+```mdx
+import PostImage from '../components/PostImage.astro';
+import myImage from '../assets/my-image.png';
+
+<PostImage src={myImage} alt="Description" caption="Optional caption" />
+```
+
+### Math (LaTeX)
 
 Inline math with single `$`: The formula $E = mc^2$ is famous.
 
@@ -179,7 +236,7 @@ $$
 $$
 ```
 
-### Using Diagrams (Mermaid)
+### Diagrams (Mermaid)
 
 ```mdx
 import Mermaid from '../components/Mermaid.astro';
@@ -192,7 +249,7 @@ graph LR
 `} />
 ```
 
-Supports flowcharts, sequence diagrams, state diagrams, etc. See [Mermaid docs](https://mermaid.js.org/).
+Supports flowcharts, sequence diagrams, state diagrams, etc. Automatically inverts colors in dark mode.
 
 ## Theming
 
@@ -200,22 +257,56 @@ Dark mode uses `html.dark` class (not body). Colors are CSS variables:
 
 ```css
 :root {
+  --bg: #ffffff;
+  --text: #1a1a1a;
   --accent: #4a6fa5;      /* Light mode */
 }
 
 html.dark {
+  --bg: #1a1a1a;
+  --text: #e0e0e0;
   --accent: #6db3c2;      /* Dark mode */
 }
 ```
 
 Theme persists via localStorage. Toggle script uses `document.documentElement`.
 
+**Layout dimensions:**
+- Content width: 750px
+- Sidebar width: 180px
+- Max width: 1100px
+
+## CI/CD Pipeline
+
+Push to `main` triggers the GitHub Actions workflow (`.github/workflows/deploy.yml`):
+
+1. **Build** — Install deps, build site, upload artifact
+2. **Link Check** — Lychee validates all URLs in HTML (parallel with Lighthouse)
+3. **Lighthouse** — Performance, accessibility, SEO audits (parallel with Link Check)
+4. **Deploy** — Vercel deployment (only after both checks pass)
+
+### Lighthouse Thresholds (lighthouserc.cjs)
+
+- Performance: 0.9 minimum
+- Accessibility: 0.9 minimum
+- Best Practices: 0.9 minimum
+- SEO: 0.9 minimum
+- FCP: 2000ms
+- LCP: 2500ms
+- CLS: 0.1
+
+### Link Check Exclusions (.lycheeignore)
+
+- twitter.com, x.com, linkedin.com (rate limiting)
+- localhost URLs
+- cdn.jsdelivr.net
+
 ## SEO
 
 - **JSON-LD:** ArticleSchema on posts, PersonSchema on About, WebsiteSchema on homepage
 - **Sitemap:** Auto-generated at `/sitemap.xml`
-- **robots.txt:** Allows all, references sitemap
-- **OG Images:** Auto-generated per post (title + tagline)
+- **robots.txt:** Allows all, references sitemap, disallows `/_astro/` and `/og/`
+- **OG Images:** Auto-generated per post (dark bg, title text)
 - **Meta tags:** Title, description, canonical, OG, Twitter cards
 
 ## Related Posts Algorithm
@@ -228,22 +319,34 @@ Uses hybrid scoring: `(tag_overlap × 2) + keyword_similarity`
 
 ## Key Architecture Decisions
 
-1. **Minimal JS** — Only theme toggle + code copy button
+1. **Minimal JS** — Only theme toggle + code copy button + Mermaid
 2. **Two-column layout** — Content | Margin notes (desktop only)
 3. **Margin notes as component** — Explicit control, auto-numbered
 4. **Tags for related posts** — Not for filtering/navigation
 5. **Auto OG images** — Generated via satori at build time
 6. **Single-author blog** — Compact byline, no heavy author boxes
 7. **Year-grouped homepage** — Posts organized chronologically with descriptions
+8. **Gated deployment** — CI checks must pass before deploy
+
+## TypeScript
+
+Path alias available:
+```typescript
+import Component from '@components/Component.astro';
+```
 
 ## Future Additions (prepared for)
 
-- **LaTeX:** Add `remark-math` + `rehype-katex` to astro.config.mjs
 - **Search:** Add Pagefind at build time
 - **Newsletter:** Add signup component, integrate with Buttondown/Substack
 
 ## Deployment
 
-Connected to Vercel via GitHub. Push to `main` triggers auto-deploy.
+Connected to Vercel via GitHub. Push to `main` triggers CI pipeline → auto-deploy (if checks pass).
 
 **Custom domain:** singhanuvrat.com (configured in Vercel dashboard)
+
+**Required Vercel secrets for GitHub Actions:**
+- `VERCEL_TOKEN`
+- `VERCEL_ORG_ID`
+- `VERCEL_PROJECT_ID`
