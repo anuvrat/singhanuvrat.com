@@ -39,7 +39,6 @@ jobs:
             --verbose
             --no-progress
             --accept 200,204,301,302,308
-            --exclude-mail
             --exclude-path './dist/rss.xml'
             './dist/**/*.html'
           failIfEmpty: false
