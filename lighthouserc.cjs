@@ -2,7 +2,7 @@ module.exports = {
   ci: {
     collect: {
       // Test against the built static files
-      staticDistDir: './dist',
+      staticDistDir: './.vercel/output/static',
       // URLs to test (relative to staticDistDir)
       url: ['/', '/about/', '/nuggets/'],
       // Number of runs per URL for more stable results
