@@ -10,6 +10,9 @@ const posts = defineCollection({
     draft: z.boolean().default(false),
     ogImage: z.string().optional(),
     tags: z.array(z.string()).default([]),
+    difficulty: z.enum(['intro', 'intermediate', 'deep-dive']).optional(),
+    series: z.string().optional(),
+    seriesOrder: z.number().optional(),
   }),
 });
 

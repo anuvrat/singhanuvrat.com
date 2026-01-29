@@ -1,0 +1,144 @@
+---
+import type { CollectionEntry } from 'astro:content';
+
+interface Props {
+  currentPost: CollectionEntry<'posts'>;
+  allPosts: CollectionEntry<'posts'>[];
+}
+
+const { currentPost, allPosts } = Astro.props;
+
+const series = currentPost.data.series;
+const seriesOrder = currentPost.data.seriesOrder;
+
+if (!series || !seriesOrder) {
+  return null;
+}
+
+// Get all posts in this series, sorted by seriesOrder
+const seriesPosts = allPosts
+  .filter(post => post.data.series === series)
+  .sort((a, b) => (a.data.seriesOrder || 0) - (b.data.seriesOrder || 0));
+
+const currentIndex = seriesPosts.findIndex(p => p.slug === currentPost.slug);
+const prevPost = currentIndex > 0 ? seriesPosts[currentIndex - 1] : null;
+const nextPost = currentIndex < seriesPosts.length - 1 ? seriesPosts[currentIndex + 1] : null;
+
+// Format series name for display
+const seriesNames: Record<string, string> = {
+  'google-infrastructure': 'Google Infrastructure Papers',
+};
+const seriesTitle = seriesNames[series] || series;
+---
+
+{series && (
+  <nav class="series-nav" aria-label="Series navigation">
+    <div class="series-header">
+      <span class="series-label">{seriesTitle}</span>
+      <span class="series-position">Part {seriesOrder} of {seriesPosts.length}</span>
+    </div>
+    <div class="series-links">
+      {prevPost ? (
+        <a href={`/${prevPost.slug}/`} class="series-link prev">
+          <span class="direction">← Previous</span>
+          <span class="title">{prevPost.data.title}</span>
+        </a>
+      ) : (
+        <div class="series-link placeholder"></div>
+      )}
+      {nextPost ? (
+        <a href={`/${nextPost.slug}/`} class="series-link next">
+          <span class="direction">Next →</span>
+          <span class="title">{nextPost.data.title}</span>
+        </a>
+      ) : (
+        <div class="series-link placeholder"></div>
+      )}
+    </div>
+  </nav>
+)}
+
+<style>
+  .series-nav {
+    margin-top: var(--space-2xl);
+    padding: var(--space-lg);
+    background: var(--bg-secondary);
+    border-radius: 6px;
+    border: 1px solid var(--border);
+  }
+
+  .series-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: var(--space-md);
+    padding-bottom: var(--space-md);
+    border-bottom: 1px solid var(--border);
+  }
+
+  .series-label {
+    font-weight: 500;
+    color: var(--text);
+  }
+
+  .series-position {
+    font-size: var(--text-sm);
+    color: var(--text-muted);
+  }
+
+  .series-links {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--space-md);
+  }
+
+  .series-link {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-xs);
+    text-decoration: none;
+    color: var(--text);
+    padding: var(--space-sm);
+    border-radius: 4px;
+    transition: background-color 0.2s ease;
+  }
+
+  .series-link:hover {
+    background-color: var(--bg);
+    text-decoration: none;
+  }
+
+  .series-link.next {
+    text-align: right;
+  }
+
+  .series-link .direction {
+    font-size: var(--text-sm);
+    color: var(--text-muted);
+  }
+
+  .series-link .title {
+    font-size: var(--text-sm);
+    font-weight: 500;
+    color: var(--accent);
+  }
+
+  .series-link:hover .title {
+    text-decoration: underline;
+    text-underline-offset: 2px;
+  }
+
+  .series-link.placeholder {
+    visibility: hidden;
+  }
+
+  @media (max-width: 640px) {
+    .series-links {
+      grid-template-columns: 1fr;
+    }
+
+    .series-link.next {
+      text-align: left;
+    }
+  }
+</style>

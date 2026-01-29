@@ -72,8 +72,14 @@ export function findRelatedPosts(
     `${currentPost.data.title} ${currentPost.data.description}`
   );
 
+  // Exclude current post and posts from the same series (series nav handles those)
+  const currentSeries = currentPost.data.series;
+
   const scored = allPosts
-    .filter(post => post.slug !== currentPost.slug)
+    .filter(post =>
+      post.slug !== currentPost.slug &&
+      (!currentSeries || post.data.series !== currentSeries)
+    )
     .map(post => {
       const postTags = post.data.tags || [];
       const postKeywords = extractKeywords(

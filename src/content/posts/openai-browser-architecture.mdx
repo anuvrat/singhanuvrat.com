@@ -3,6 +3,7 @@ title: "OpenAI's Browser - Architectural Trade-offs"
 description: "A deep dive into the Atlas browser's split architecture: why OpenAI separated the UI from Chromium, and the performance, security, and maintenance trade-offs involved."
 pubDate: 2025-11-04
 tags: ["architecture", "ai", "deep-dive"]
+difficulty: "intermediate"
 ---
 
 When OpenAI [launched](https://openai.com/index/introducing-chatgpt-atlas/) its new browser, most people focused on the AI features. But the more interesting story is its architecture. OpenAI didn’t just reskin Chromium. They split it into two separate pieces. In doing so, they traded the complexity of managing a normal Chromium fork for the complexity of a distributed system.

@@ -3,6 +3,8 @@ import type { CollectionEntry } from 'astro:content';
 import BaseLayout from './BaseLayout.astro';
 import ArticleSchema from '../components/ArticleSchema.astro';
 import RelatedPosts from '../components/RelatedPosts.astro';
+import SeriesNav from '../components/SeriesNav.astro';
+import TocDots from '../components/TocDots.astro';
 import { getReadingTime } from '../utils/readingTime';
 import { formatDate, UPDATED_THRESHOLD_MS } from '../utils/formatDate';
 import { findRelatedPosts } from '../utils/relatedPosts';
@@ -20,6 +22,15 @@ interface Props {
 }
 
 const { title, description, pubDate, updatedDate, body, ogImage, currentPost, allPosts } = Astro.props;
+
+// Difficulty display mapping
+const difficultyLabels: Record<string, string> = {
+  'intro': 'Intro',
+  'intermediate': 'Intermediate',
+  'deep-dive': 'Deep-dive',
+};
+const difficulty = currentPost.data.difficulty;
+const difficultyLabel = difficulty ? difficultyLabels[difficulty] : null;
 
 // Auto-generate OG image URL if not provided
 const slug = Astro.url.pathname.replace(/^\//, '').replace(/\/$/, '');
@@ -48,6 +59,8 @@ const relatedPosts = findRelatedPosts(currentPost, allPosts, 3);
     ogImage={finalOgImage}
   />
 
+  <TocDots headings={Astro.props.headings} />
+
   <article class="post">
     <div class="post-layout">
       <div class="content-column">
@@ -59,6 +72,12 @@ const relatedPosts = findRelatedPosts(currentPost, allPosts, 3);
             <time datetime={pubDate.toISOString()}>{formattedPubDate}</time>
             <span class="separator">·</span>
             <span>{readingTime}</span>
+            {difficultyLabel && (
+              <>
+                <span class="separator">·</span>
+                <span class={`difficulty difficulty-${difficulty}`}>{difficultyLabel}</span>
+              </>
+            )}
             {showUpdated && (
               <>
                 <span class="separator">·</span>
@@ -73,6 +92,7 @@ const relatedPosts = findRelatedPosts(currentPost, allPosts, 3);
         </div>
 
         <footer class="post-footer">
+          <SeriesNav currentPost={currentPost} allPosts={allPosts} />
           <RelatedPosts posts={relatedPosts} />
         </footer>
       </div>
@@ -150,6 +170,30 @@ const relatedPosts = findRelatedPosts(currentPost, allPosts, 3);
 
   .updated {
     font-style: italic;
+  }
+
+  .difficulty {
+    font-size: 0.7rem;
+    padding: 0.15em 0.5em;
+    border-radius: 3px;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+    font-weight: 500;
+  }
+
+  .difficulty-intro {
+    background: var(--bg-secondary);
+    color: var(--text-muted);
+  }
+
+  .difficulty-intermediate {
+    background: var(--bg-secondary);
+    color: var(--accent);
+  }
+
+  .difficulty-deep-dive {
+    background: var(--accent);
+    color: var(--bg);
   }
 
   .post-content {

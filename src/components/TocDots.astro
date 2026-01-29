@@ -1,0 +1,123 @@
+---
+interface Props {
+  headings: { depth: number; slug: string; text: string }[];
+}
+
+const { headings } = Astro.props;
+
+// Only show h2 headings for the dots
+const sections = headings.filter(h => h.depth === 2);
+---
+
+{sections.length > 1 && (
+  <nav class="toc-dots" aria-label="Table of contents">
+    {sections.map((section, index) => (
+      <a
+        href={`#${section.slug}`}
+        class="toc-dot"
+        data-section={section.slug}
+        aria-label={section.text}
+      >
+        <span class="toc-tooltip">{section.text}</span>
+      </a>
+    ))}
+  </nav>
+)}
+
+<style>
+  .toc-dots {
+    position: fixed;
+    left: calc((100vw - var(--max-width)) / 2 - 40px);
+    top: 50%;
+    transform: translateY(-50%);
+    display: none;
+    flex-direction: column;
+    gap: 12px;
+    z-index: 100;
+  }
+
+  @media (min-width: 1200px) {
+    .toc-dots {
+      display: flex;
+    }
+  }
+
+  .toc-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--border);
+    transition: background-color 0.2s ease, transform 0.2s ease;
+    position: relative;
+    cursor: pointer;
+  }
+
+  .toc-dot:hover,
+  .toc-dot.active {
+    background: var(--accent);
+    transform: scale(1.3);
+  }
+
+  .toc-tooltip {
+    position: absolute;
+    left: 20px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: var(--bg-secondary);
+    border: 1px solid var(--border);
+    padding: 4px 10px;
+    border-radius: 4px;
+    font-size: 0.75rem;
+    color: var(--text);
+    white-space: nowrap;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.15s ease, visibility 0.15s ease;
+    pointer-events: none;
+  }
+
+  .toc-dot:hover .toc-tooltip {
+    opacity: 1;
+    visibility: visible;
+  }
+</style>
+
+<script>
+  function initTocDots() {
+    const dots = document.querySelectorAll('.toc-dot');
+    if (dots.length === 0) return;
+
+    const sections = Array.from(dots).map(dot => {
+      const slug = dot.getAttribute('data-section');
+      const element = document.getElementById(slug || '');
+      return { dot, element };
+    }).filter(s => s.element);
+
+    function updateActive() {
+      const scrollY = window.scrollY;
+      const viewportHeight = window.innerHeight;
+
+      let activeIndex = 0;
+
+      for (let i = 0; i < sections.length; i++) {
+        const { element } = sections[i];
+        if (element && element.offsetTop - viewportHeight * 0.3 <= scrollY) {
+          activeIndex = i;
+        }
+      }
+
+      dots.forEach((dot, i) => {
+        dot.classList.toggle('active', i === activeIndex);
+      });
+    }
+
+    window.addEventListener('scroll', updateActive, { passive: true });
+    updateActive();
+  }
+
+  // Run on initial load
+  initTocDots();
+
+  // Re-run after View Transitions
+  document.addEventListener('astro:after-swap', initTocDots);
+</script>
