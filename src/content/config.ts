@@ -16,4 +16,15 @@ const posts = defineCollection({
   }),
 });
 
-export const collections = { posts };
+const nuggets = defineCollection({
+  type: 'content',
+  schema: z.object({
+    title: z.string(),           // e.g., "Nuggets #12"
+    number: z.number(),          // e.g., 12 (for URL and display)
+    dateRange: z.string(),       // e.g., "Jan 15-28, 2025"
+    pubDate: z.coerce.date(),
+    draft: z.boolean().default(false),
+  }),
+});
+
+export const collections = { posts, nuggets };

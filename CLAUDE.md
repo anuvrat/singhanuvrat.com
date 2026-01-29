@@ -119,6 +119,43 @@ Current series:
 
 Series posts show navigation (prev/next) instead of related posts.
 
+## Nuggets (Bi-Weekly Digest)
+
+Curated links and commentary from research. Separate from posts.
+
+**Location:** `src/content/nuggets/`
+**URL:** `/nuggets/` (list) and `/nuggets/[number]/` (individual)
+
+### Quick Add Workflow
+
+1. Create a new `.mdx` file in `src/content/nuggets/`
+2. Add content with links and commentary
+3. Run `/prepare-nugget` — Claude will assign number, dates, format
+
+### Frontmatter Schema
+
+```yaml
+---
+title: "Nuggets #12"
+number: 12
+dateRange: "Jan 15-28, 2025"
+pubDate: 2025-01-28
+---
+```
+
+### Content Structure
+
+```markdown
+## What Caught My Eye
+
+Commentary with [integrated links](url) woven into prose.
+
+## Quick Links
+
+- [Article title](url) — One-line description
+- [Article title](url) — Why it's worth reading
+```
+
 ### Using Margin Notes
 
 Margin notes appear in the right margin on desktop, expand on mobile tap.
