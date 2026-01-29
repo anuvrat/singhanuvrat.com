@@ -6,6 +6,8 @@ tags: ["distributed-systems", "storage-systems", "paper-analysis"]
 difficulty: "deep-dive"
 ---
 
+import Callout from "@components/Callout.astro";
+
 Some research papers don’t just document a system, they reveal how engineers reason about complexity. Facebook’s [Tectonic filesystem](https://engineering.fb.com/2021/06/21/data-infrastructure/tectonic-file-system/) is one such example. It’s not about building an ideal system, but about achieving _balance_: accepting small inefficiencies to gain massive improvements in stability, adaptability, and efficiency at exabyte scale.
 
 This post explores how Tectonic’s major design choices illustrate the trade-offs that large-scale systems must navigate, and what they teach us about designing for scale.
@@ -36,7 +38,10 @@ In GFS, a single centralized **NameNode** held all filesystem metadata in memory
 
 Tectonic solved this by distributing metadata across a **sharded key-value store**. This horizontal architecture introduced additional network hops and latency but delivered what GFS could not: near-infinite scalability and resilience across fault domains.
 
-> Key takeaway: At massive scale, systems trade a bit of local speed for global scalability and fault tolerance.
+<Callout type="note">
+  Key takeaway: At massive scale, systems trade a bit of local speed for global
+  scalability and fault tolerance.
+</Callout>
 
 ## The Core Trade-offs in Tectonic
 
@@ -46,7 +51,11 @@ Let’s explore the main trade-offs that define Tectonic and what they reveal ab
 
 In HDFS, metadata operations were instantaneous because everything lived in memory on a single node. Tectonic’s distributed design added network overhead but removed single-node limits. Instead of fighting that latency, engineers leaned into concurrency: clients issued many metadata requests simultaneously, achieving higher total throughput.
 
-> Lesson: For batch-oriented workloads like Tectonic’s Data Warehouse, scalability comes from maximizing throughput rather than minimizing per-operation latency.
+<Callout type="note">
+  Lesson: For batch-oriented workloads like Tectonic’s Data Warehouse,
+  scalability comes from maximizing throughput rather than minimizing
+  per-operation latency.
+</Callout>
 
 ### Simplicity vs. Flexibility (Client-Side Logic)
 
@@ -57,7 +66,10 @@ Tectonic moved much of its decision-making into client libraries. Each tenant co
 
 This approach increased client complexity and duplicated logic, but it enabled a unified storage substrate to serve radically different performance needs.
 
-> Lesson: Flexibility often requires decentralizing control, even if it introduces local complexity.
+<Callout type="note">
+  Lesson: Flexibility often requires decentralizing control, even if it
+  introduces local complexity.
+</Callout>
 
 ### Availability vs. Cost Efficiency
 
@@ -65,13 +77,19 @@ Most of Tectonic’s data is RS-encoded. When a disk fails, reconstruction requi
 
 This safeguard occasionally reduces availability but prevents cascading failures and eliminates the need for expensive over-provisioning.
 
-> Lesson: Controlled degradation is often more sustainable than over-provisioning for extreme cases.
+<Callout type="note">
+  Lesson: Controlled degradation is often more sustainable than
+  over-provisioning for extreme cases.
+</Callout>
 
 ### Replication Followed by Re-encoding
 
 When new data arrives, Tectonic writes it through fast replication for speed and reliability, then later re-encodes it into RS blocks for storage efficiency. This two-phase process consumes extra space temporarily but improves write latency and simplifies recovery.
 
-> Lesson: Temporary inefficiency can be a powerful tool for achieving long-term performance and maintainability.
+<Callout type="note">
+  Lesson: Temporary inefficiency can be a powerful tool for achieving long-term
+  performance and maintainability.
+</Callout>
 
 ## Closing Reflections: Designing for Balance
 
@@ -79,4 +97,7 @@ If **GFS** was about _control_, **Tectonic** was about _coordination_. GFS optim
 
 The larger lesson is that distributed system design evolves through constraint, not convenience. The most durable architectures embrace imperfection as a design tool - using small inefficiencies to unlock scalability, resilience, and sustainability.
 
-> At large scale, perfection gives way to balance. The art of system design lies in knowing what to sacrifice, and doing so deliberately.
+<Callout type="note">
+  At large scale, perfection gives way to balance. The art of system design lies
+  in knowing what to sacrifice, and doing so deliberately.
+</Callout>
