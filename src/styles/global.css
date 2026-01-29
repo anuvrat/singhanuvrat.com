@@ -154,12 +154,12 @@ pre code {
 }
 
 /* Dark mode code highlighting - override inline styles with CSS variables */
-html.dark pre.shiki {
+html.dark pre.astro-code {
   background-color: var(--shiki-dark-bg) !important;
 }
 
-html.dark pre.shiki,
-html.dark pre.shiki span {
+html.dark pre.astro-code,
+html.dark pre.astro-code span {
   color: var(--shiki-dark) !important;
 }
 
