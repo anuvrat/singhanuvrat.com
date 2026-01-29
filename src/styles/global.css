@@ -188,3 +188,88 @@ img {
   background-color: var(--accent);
   color: var(--bg);
 }
+
+/* Anchor links on headings */
+.post-content h2,
+.post-content h3 {
+  position: relative;
+}
+
+.post-content h2 a.anchor,
+.post-content h3 a.anchor {
+  position: absolute;
+  left: -1.5em;
+  width: 1.5em;
+  opacity: 0;
+  color: var(--text-muted);
+  text-decoration: none;
+  font-weight: 400;
+  transition: opacity 0.2s ease;
+}
+
+.post-content h2:hover a.anchor,
+.post-content h3:hover a.anchor,
+.post-content h2 a.anchor:focus,
+.post-content h3 a.anchor:focus {
+  opacity: 1;
+}
+
+.post-content h2 a.anchor:hover,
+.post-content h3 a.anchor:hover {
+  color: var(--accent);
+}
+
+/* Reading progress bar */
+.reading-progress {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 0%;
+  height: 2px;
+  background: var(--accent);
+  z-index: 1000;
+  transition: width 50ms ease-out;
+}
+
+/* Print styles */
+@media print {
+  body {
+    background: white;
+    color: black;
+    font-size: 12pt;
+    line-height: 1.5;
+  }
+
+  .reading-progress,
+  header,
+  footer,
+  .theme-toggle,
+  .copy-button,
+  .related-posts {
+    display: none !important;
+  }
+
+  a {
+    color: black;
+    text-decoration: underline;
+  }
+
+  a[href^="http"]::after {
+    content: " (" attr(href) ")";
+    font-size: 0.8em;
+    color: #666;
+  }
+
+  pre {
+    border: 1px solid #ccc;
+    page-break-inside: avoid;
+  }
+
+  h1, h2, h3 {
+    page-break-after: avoid;
+  }
+
+  .post-content {
+    max-width: 100%;
+  }
+}
