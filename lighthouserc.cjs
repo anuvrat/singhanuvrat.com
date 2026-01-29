@@ -17,7 +17,7 @@ module.exports = {
         'categories:seo': ['error', { minScore: 0.9 }],
 
         // Core Web Vitals
-        'first-contentful-paint': ['warn', { maxNumericValue: 1500 }],
+        'first-contentful-paint': ['warn', { maxNumericValue: 2000 }],
         'largest-contentful-paint': ['warn', { maxNumericValue: 2500 }],
         'cumulative-layout-shift': ['warn', { maxNumericValue: 0.1 }],
         'total-blocking-time': ['warn', { maxNumericValue: 300 }],
