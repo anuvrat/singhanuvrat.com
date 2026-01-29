@@ -1,0 +1,46 @@
+name: Link Check
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+  # Allow manual trigger
+  workflow_dispatch:
+
+jobs:
+  link-check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 9
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install
+
+      - name: Build site
+        run: pnpm build
+
+      - name: Check links
+        uses: lycheeverse/lychee-action@v2
+        with:
+          # Check the built HTML files
+          args: >-
+            --verbose
+            --no-progress
+            --accept 200,204,301,302,308
+            --exclude-mail
+            --exclude "localhost"
+            --exclude "127.0.0.1"
+            './dist/**/*.html'
+          fail: true

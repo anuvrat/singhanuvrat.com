@@ -1,0 +1,13 @@
+# Lychee link checker ignore patterns
+# https://lychee.cli.rs/
+
+# Localhost and loopback
+localhost
+127\.0\.0\.1
+
+# Email addresses
+mailto:
+
+# Known rate-limited or blocking sites (add as needed)
+# twitter.com
+# x.com
