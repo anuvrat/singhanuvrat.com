@@ -13,6 +13,10 @@
     "@astrojs/rss": "^4.0.15",
     "@astrojs/vercel": "^9.0.4",
     "astro": "^5.16.15",
+    "katex": "^0.16.28",
+    "mermaid": "^11.12.2",
+    "rehype-katex": "^7.0.1",
+    "remark-math": "^6.0.0",
     "satori": "^0.19.1",
     "sharp": "^0.34.5"
   },

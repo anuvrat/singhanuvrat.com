@@ -130,6 +130,33 @@ import MarginNote from '../components/MarginNote.astro';
 Some text here.<MarginNote>This appears in the right margin.</MarginNote>
 ```
 
+### Using Math (LaTeX)
+
+Inline math with single `$`: The formula $E = mc^2$ is famous.
+
+Block math with double `$$`:
+
+```mdx
+$$
+\frac{\partial f}{\partial x} = \lim_{h \to 0} \frac{f(x+h) - f(x)}{h}
+$$
+```
+
+### Using Diagrams (Mermaid)
+
+```mdx
+import Mermaid from '../components/Mermaid.astro';
+
+<Mermaid chart={`
+graph LR
+    A[Client] --> B[Load Balancer]
+    B --> C[Server 1]
+    B --> D[Server 2]
+`} />
+```
+
+Supports flowcharts, sequence diagrams, state diagrams, etc. See [Mermaid docs](https://mermaid.js.org/).
+
 ## Theming
 
 Dark mode uses `html.dark` class (not body). Colors are CSS variables:
