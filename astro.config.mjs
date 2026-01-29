@@ -4,6 +4,11 @@ import mdx from '@astrojs/mdx';
 import vercel from '@astrojs/vercel';
 import remarkMath from 'remark-math';
 import rehypeKatex from 'rehype-katex';
+import {
+  transformerNotationHighlight,
+  transformerNotationDiff,
+  transformerMetaHighlight,
+} from '@shikijs/transformers';
 
 import codeLightTheme from './src/themes/code-light.json';
 import codeDarkTheme from './src/themes/code-dark.json';
@@ -23,6 +28,11 @@ export default defineConfig({
         dark: codeDarkTheme,
       },
       wrap: true,
+      transformers: [
+        transformerNotationHighlight(),
+        transformerNotationDiff(),
+        transformerMetaHighlight(),
+      ],
     },
   },
 });

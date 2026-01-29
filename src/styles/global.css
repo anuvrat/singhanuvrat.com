@@ -171,6 +171,65 @@ html.dark pre.astro-code span {
   color: var(--shiki-dark) !important;
 }
 
+/* Code block line highlighting */
+pre .line.highlighted {
+  background-color: rgba(74, 111, 165, 0.1);
+  margin: 0 calc(-1 * var(--space-md));
+  padding: 0 var(--space-md);
+  display: inline-block;
+  width: calc(100% + 2 * var(--space-md));
+}
+
+html.dark pre .line.highlighted {
+  background-color: rgba(109, 179, 194, 0.15);
+}
+
+/* Code block diff styling */
+pre .line.diff.add {
+  background-color: rgba(72, 140, 72, 0.15);
+  margin: 0 calc(-1 * var(--space-md));
+  padding: 0 var(--space-md);
+  display: inline-block;
+  width: calc(100% + 2 * var(--space-md));
+}
+
+pre .line.diff.add::before {
+  content: '+';
+  color: #488c48;
+  margin-right: 0.5em;
+}
+
+pre .line.diff.remove {
+  background-color: rgba(180, 72, 72, 0.15);
+  margin: 0 calc(-1 * var(--space-md));
+  padding: 0 var(--space-md);
+  display: inline-block;
+  width: calc(100% + 2 * var(--space-md));
+  opacity: 0.7;
+}
+
+pre .line.diff.remove::before {
+  content: '-';
+  color: #b44848;
+  margin-right: 0.5em;
+}
+
+html.dark pre .line.diff.add {
+  background-color: rgba(72, 140, 72, 0.2);
+}
+
+html.dark pre .line.diff.add::before {
+  color: #6abf6a;
+}
+
+html.dark pre .line.diff.remove {
+  background-color: rgba(180, 72, 72, 0.2);
+}
+
+html.dark pre .line.diff.remove::before {
+  color: #d47878;
+}
+
 /* Lists */
 ul, ol {
   margin-top: var(--space-md);
@@ -271,6 +330,12 @@ button:focus-visible {
 
 .post-content h2 a.anchor:hover,
 .post-content h3 a.anchor:hover {
+  color: var(--accent);
+}
+
+.post-content h2 a.anchor.copied,
+.post-content h3 a.anchor.copied {
+  opacity: 1;
   color: var(--accent);
 }
 

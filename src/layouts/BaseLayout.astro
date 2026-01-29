@@ -100,14 +100,32 @@ const canonicalURL = new URL(Astro.url.pathname, Astro.site);
       }
     </script>
 
-    <!-- Anchor links on headings -->
+    <!-- Anchor links on headings (click to copy URL) -->
     <script>
       document.querySelectorAll('.post-content h2[id], .post-content h3[id]').forEach(heading => {
         const anchor = document.createElement('a');
         anchor.className = 'anchor';
         anchor.href = `#${heading.id}`;
         anchor.textContent = '#';
-        anchor.setAttribute('aria-label', `Link to ${heading.textContent}`);
+        anchor.setAttribute('aria-label', `Copy link to ${heading.textContent}`);
+
+        anchor.addEventListener('click', async (e) => {
+          e.preventDefault();
+          const url = `${window.location.origin}${window.location.pathname}#${heading.id}`;
+          await navigator.clipboard.writeText(url);
+
+          // Visual feedback
+          anchor.textContent = '✓';
+          anchor.classList.add('copied');
+          setTimeout(() => {
+            anchor.textContent = '#';
+            anchor.classList.remove('copied');
+          }, 1500);
+
+          // Also update the URL hash for navigation
+          history.pushState(null, '', `#${heading.id}`);
+        });
+
         heading.insertBefore(anchor, heading.firstChild);
       });
     </script>
