@@ -23,7 +23,7 @@ const hasNuggets = nuggets.length > 0;
         {nuggets.map((nugget) => (
           <li>
             <a href={`/nuggets/${nugget.data.number}/`} class="nugget-link">
-              <span class="nugget-number">#{nugget.data.number}</span>
+              <span class="nugget-title">{nugget.data.title}</span>
               <span class="nugget-date">{nugget.data.dateRange}</span>
             </a>
           </li>
@@ -81,12 +81,11 @@ const hasNuggets = nuggets.length > 0;
     color: var(--accent);
   }
 
-  .nugget-number {
-    font-weight: 700;
-    font-size: var(--text-lg);
+  .nugget-title {
+    font-weight: 600;
   }
 
-  .nugget-link:hover .nugget-number {
+  .nugget-link:hover .nugget-title {
     text-decoration: underline;
     text-underline-offset: 3px;
   }
