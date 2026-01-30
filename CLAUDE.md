@@ -151,41 +151,58 @@ Series posts show navigation (prev/next) instead of related posts.
 
 ## Nuggets (Bi-Weekly Digest)
 
-Curated links and commentary from research. Separate from posts.
+Curated links and commentary from research. Lighter than posts, more frequent.
 
-**Status:** Infrastructure ready (pages, collection schema), awaiting first content
-**Location:** `src/content/nuggets/` (create directory when adding first nugget)
+**Location:** `src/content/nuggets/`
 **URL:** `/nuggets/` (list) and `/nuggets/[number]/` (individual)
 
 ### Quick Add Workflow
 
-1. Create `src/content/nuggets/` directory if it doesn't exist
-2. Create a new `.mdx` file with content
-3. Run `/prepare-nugget` — Claude will assign number, dates, format
+1. Create a new `.mdx` file in `src/content/nuggets/`
+2. Run `/prepare-nugget` — Claude will assign number, dates, format
 
 ### Frontmatter Schema
 
 ```yaml
 ---
-title: "Nuggets #12"
-number: 12
+title: "#1: Catchy subtitle here"
+number: 1
 dateRange: "Jan 15-28, 2025"
 pubDate: 2025-01-28
+# Optional personal touches
+song:
+  title: "Song Title"
+  artist: "Artist Name"
+  url: "https://..."  # optional
+podcast:
+  title: "Episode Title"
+  url: "https://..."  # optional
 ---
 ```
 
 ### Content Structure
 
-```markdown
-## What Caught My Eye
+Bullet-point focused, not prose-heavy:
 
-Commentary with [integrated links](url) woven into prose.
+```markdown
+## Quick Thoughts
+
+- Main point with commentary
+  - Supporting detail (nested, muted styling)
+  - Another detail
+- Another main point
 
 ## Quick Links
 
 - [Article title](url) — One-line description
-- [Article title](url) — Why it's worth reading
 ```
+
+### Display Features
+
+- **List page:** Shows full title for each nugget
+- **Detail page:** Top-level bullets separated by muted lines, nested bullets indented and smaller
+- **Personal footer:** Song and podcast displayed as compact sign-off (optional)
+- **Navigation:** Shows prev/next with full titles
 
 ## MDX Components
 
