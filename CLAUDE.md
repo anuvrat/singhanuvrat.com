@@ -236,6 +236,34 @@ $$
 $$
 ```
 
+### Code Blocks
+
+Enhanced code blocks with Shiki transformers:
+
+**Line highlighting (inline comment):**
+```ts
+const a = 1;
+const b = 2; // [!code highlight]
+const c = 3;
+```
+
+**Diff syntax:**
+```ts
+const old = 'removed'; // [!code --]
+const new = 'added';   // [!code ++]
+```
+
+**Meta highlighting (highlight specific lines):**
+````md
+```ts {2,4-5}
+line 1
+line 2  // highlighted
+line 3
+line 4  // highlighted
+line 5  // highlighted
+```
+````
+
 ### Diagrams (Mermaid)
 
 ```mdx
@@ -280,10 +308,12 @@ Theme persists via localStorage. Toggle script uses `document.documentElement`.
 
 Push to `main` triggers the GitHub Actions workflow (`.github/workflows/deploy.yml`):
 
-1. **Build** — Install deps, build site, upload artifact
+1. **Build** — `vercel pull` + `vercel build --prod` (single build, creates `.vercel/output`)
 2. **Link Check** — Lychee validates all URLs in HTML (parallel with Lighthouse)
 3. **Lighthouse** — Performance, accessibility, SEO audits (parallel with Link Check)
-4. **Deploy** — Vercel deployment (only after both checks pass)
+4. **Deploy** — `vercel deploy --prebuilt --prod` (only after both checks pass)
+
+**Note:** Vercel's auto-deploy is disabled. Deployment only happens via GitHub Actions after checks pass.
 
 ### Lighthouse Thresholds (lighthouserc.cjs)
 
@@ -319,14 +349,16 @@ Uses hybrid scoring: `(tag_overlap × 2) + keyword_similarity`
 
 ## Key Architecture Decisions
 
-1. **Minimal JS** — Only theme toggle + code copy button + Mermaid
-2. **Two-column layout** — Content | Margin notes (desktop only)
-3. **Margin notes as component** — Explicit control, auto-numbered
-4. **Tags for related posts** — Not for filtering/navigation
-5. **Auto OG images** — Generated via satori at build time
-6. **Single-author blog** — Compact byline, no heavy author boxes
-7. **Year-grouped homepage** — Posts organized chronologically with descriptions
-8. **Gated deployment** — CI checks must pass before deploy
+1. **Minimal JS** — Theme toggle (inline), post features (anchor links + code copy), Mermaid (when used)
+2. **Conditional loading** — KaTeX CSS only loads on pages containing math
+3. **Two-column layout** — Content | Margin notes (desktop only)
+4. **Margin notes as component** — Explicit control, auto-numbered
+5. **Tags for related posts** — Not for filtering/navigation
+6. **Auto OG images** — Generated via satori at build time
+7. **Single-author blog** — Compact byline, no heavy author boxes
+8. **Year-grouped homepage** — Posts organized chronologically with descriptions
+9. **Gated deployment** — CI checks must pass before Vercel deploy
+10. **Single build** — `vercel build` in CI, deploy with `--prebuilt` (no double building)
 
 ## TypeScript
 
@@ -335,10 +367,16 @@ Path alias available:
 import Component from '@components/Component.astro';
 ```
 
-## Future Additions (prepared for)
+## Design Philosophy
 
-- **Search:** Add Pagefind at build time
-- **Newsletter:** Add signup component, integrate with Buttondown/Substack
+**Elegant minimalism:** Clean, high-signal, no clutter. Every element earns its place.
+
+The site is feature-complete. Resist the urge to add more features. The best elevation is better content, not more code.
+
+## Future Additions (only if genuinely needed)
+
+- **Search:** Pagefind (static, ~5KB) — add when content volume justifies it
+- **Newsletter:** Consider only if audience requests it
 
 ## Deployment
 
