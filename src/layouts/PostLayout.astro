@@ -47,9 +47,12 @@ const showUpdated = updatedDate &&
 const readingTime = getReadingTime(body);
 const canonicalUrl = new URL(Astro.url.pathname, Astro.site).toString();
 const relatedPosts = findRelatedPosts(currentPost, allPosts, 3);
+
+// Detect if post contains math (LaTeX delimiters)
+const hasMath = /\$\$[\s\S]+?\$\$|\$[^$\n]+?\$/.test(body);
 ---
 
-<BaseLayout title={`${title} — Anuvrat`} description={description} ogImage={finalOgImage}>
+<BaseLayout title={`${title} — Anuvrat`} description={description} ogImage={finalOgImage} hasMath={hasMath}>
   <ArticleSchema
     title={title}
     description={description}

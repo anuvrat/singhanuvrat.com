@@ -339,18 +339,6 @@ button:focus-visible {
   color: var(--accent);
 }
 
-/* Reading progress bar */
-.reading-progress {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 0%;
-  height: 2px;
-  background: var(--accent);
-  z-index: 1000;
-  transition: width 50ms ease-out;
-}
-
 /* Print styles */
 @media print {
   body {
@@ -360,7 +348,6 @@ button:focus-visible {
     line-height: 1.5;
   }
 
-  .reading-progress,
   header,
   footer,
   .theme-toggle,

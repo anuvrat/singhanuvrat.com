@@ -7,9 +7,10 @@ interface Props {
   title: string;
   description?: string;
   ogImage?: string;
+  hasMath?: boolean;
 }
 
-const { title, description = "Thinking in systems", ogImage } = Astro.props;
+const { title, description = "Thinking in systems", ogImage, hasMath = false } = Astro.props;
 const canonicalURL = new URL(Astro.url.pathname, Astro.site);
 ---
 
@@ -43,12 +44,14 @@ const canonicalURL = new URL(Astro.url.pathname, Astro.site);
     <!-- RSS -->
     <link rel="alternate" type="application/rss+xml" title="RSS Feed" href="/rss.xml" />
 
-    <!-- Preconnect hints for external resources -->
-    <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin />
-    <link rel="dns-prefetch" href="https://cdn.jsdelivr.net" />
-
-    <!-- KaTeX for math rendering -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.css" integrity="sha384-GvrOXuhMATgEsSwCs4smOFZETl1RdNStrgjcCeFQhB98kRCOE96N5Rqn4GnQe8Rj" crossorigin="anonymous">
+    {/* KaTeX for math rendering - only load when needed */}
+    {hasMath && (
+      <>
+        <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin />
+        <link rel="dns-prefetch" href="https://cdn.jsdelivr.net" />
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.css" integrity="sha384-GvrOXuhMATgEsSwCs4smOFZETl1RdNStrgjcCeFQhB98kRCOE96N5Rqn4GnQe8Rj" crossorigin="anonymous" />
+      </>
+    )}
 
     <!-- View transitions for smooth page navigation -->
     <ClientRouter />
@@ -76,69 +79,45 @@ const canonicalURL = new URL(Astro.url.pathname, Astro.site);
     </script>
   </head>
   <body>
-    <div class="reading-progress" id="reading-progress"></div>
     <Header />
     <main class="main-content">
       <slot />
     </main>
     <Footer />
 
-    <!-- Reading progress bar -->
+    <!-- Post enhancements: anchor links + code copy buttons -->
     <script>
-      const progressBar = document.getElementById('reading-progress');
-      const postContent = document.querySelector('.post-content');
+      function initPostFeatures() {
+        // Anchor links on headings (click to copy URL)
+        document.querySelectorAll('.post-content h2[id], .post-content h3[id]').forEach(heading => {
+          if (heading.querySelector('.anchor')) return; // Already initialized
 
-      if (progressBar && postContent) {
-        window.addEventListener('scroll', () => {
-          const contentTop = postContent.offsetTop;
-          const contentHeight = postContent.offsetHeight;
-          const windowHeight = window.innerHeight;
-          const scrollY = window.scrollY;
+          const anchor = document.createElement('a');
+          anchor.className = 'anchor';
+          anchor.href = `#${heading.id}`;
+          anchor.textContent = '#';
+          anchor.setAttribute('aria-label', `Copy link to ${heading.textContent}`);
 
-          const progress = Math.min(100, Math.max(0,
-            ((scrollY - contentTop + windowHeight * 0.3) / contentHeight) * 100
-          ));
+          anchor.addEventListener('click', async (e) => {
+            e.preventDefault();
+            const url = `${window.location.origin}${window.location.pathname}#${heading.id}`;
+            await navigator.clipboard.writeText(url);
+            anchor.textContent = '✓';
+            anchor.classList.add('copied');
+            setTimeout(() => {
+              anchor.textContent = '#';
+              anchor.classList.remove('copied');
+            }, 1500);
+            history.pushState(null, '', `#${heading.id}`);
+          });
 
-          progressBar.style.width = `${progress}%`;
-        }, { passive: true });
-      }
-    </script>
-
-    <!-- Anchor links on headings (click to copy URL) -->
-    <script>
-      document.querySelectorAll('.post-content h2[id], .post-content h3[id]').forEach(heading => {
-        const anchor = document.createElement('a');
-        anchor.className = 'anchor';
-        anchor.href = `#${heading.id}`;
-        anchor.textContent = '#';
-        anchor.setAttribute('aria-label', `Copy link to ${heading.textContent}`);
-
-        anchor.addEventListener('click', async (e) => {
-          e.preventDefault();
-          const url = `${window.location.origin}${window.location.pathname}#${heading.id}`;
-          await navigator.clipboard.writeText(url);
-
-          // Visual feedback
-          anchor.textContent = '✓';
-          anchor.classList.add('copied');
-          setTimeout(() => {
-            anchor.textContent = '#';
-            anchor.classList.remove('copied');
-          }, 1500);
-
-          // Also update the URL hash for navigation
-          history.pushState(null, '', `#${heading.id}`);
+          heading.insertBefore(anchor, heading.firstChild);
         });
 
-        heading.insertBefore(anchor, heading.firstChild);
-      });
-    </script>
+        // Copy button for code blocks
+        document.querySelectorAll('pre').forEach((pre) => {
+          if (pre.querySelector('.copy-button')) return; // Already initialized
 
-    <!-- Copy button for code blocks -->
-    <script>
-      const codeBlocks = document.querySelectorAll('pre');
-      if (codeBlocks.length > 0) {
-        codeBlocks.forEach((pre) => {
           const button = document.createElement('button');
           button.className = 'copy-button';
           button.setAttribute('aria-label', 'Copy code');
@@ -158,54 +137,9 @@ const canonicalURL = new URL(Astro.url.pathname, Astro.site);
           pre.appendChild(button);
         });
       }
-    </script>
 
-    <!-- Reading position memory -->
-    <script>
-      function initReadingPosition() {
-        const postContent = document.querySelector('.post-content');
-        if (!postContent) return;
-
-        const key = `reading-pos:${window.location.pathname}`;
-        const minScroll = 200;
-        let saveTimeout: ReturnType<typeof setTimeout>;
-
-        // Restore position (only on initial load, not view transitions)
-        if (!document.documentElement.dataset.transitioned) {
-          const saved = localStorage.getItem(key);
-          if (saved) {
-            const pos = parseInt(saved, 10);
-            if (pos > minScroll) {
-              setTimeout(() => window.scrollTo(0, pos), 0);
-            }
-          }
-        }
-
-        // Save position on scroll (debounced)
-        const scrollHandler = () => {
-          clearTimeout(saveTimeout);
-          saveTimeout = setTimeout(() => {
-            const scrollY = window.scrollY;
-            const docHeight = document.documentElement.scrollHeight;
-            const windowHeight = window.innerHeight;
-            const atBottom = scrollY + windowHeight >= docHeight - 50;
-
-            if (atBottom) {
-              localStorage.removeItem(key);
-            } else if (scrollY > minScroll) {
-              localStorage.setItem(key, String(scrollY));
-            }
-          }, 300);
-        };
-
-        window.addEventListener('scroll', scrollHandler, { passive: true });
-      }
-
-      initReadingPosition();
-      document.addEventListener('astro:after-swap', () => {
-        document.documentElement.dataset.transitioned = 'true';
-        initReadingPosition();
-      });
+      initPostFeatures();
+      document.addEventListener('astro:after-swap', initPostFeatures);
     </script>
   </body>
 </html>
