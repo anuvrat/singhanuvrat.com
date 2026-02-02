@@ -3,8 +3,8 @@ import { getCollection } from 'astro:content';
 import type { APIContext } from 'astro';
 
 export async function GET(context: APIContext) {
-  const posts = await getCollection('posts', ({ data }) => !data.draft);
-  const nuggets = await getCollection('nuggets', ({ data }) => !data.draft);
+  const posts = await getCollection('posts', ({ data }) => import.meta.env.DEV || !data.draft);
+  const nuggets = await getCollection('nuggets', ({ data }) => import.meta.env.DEV || !data.draft);
 
   const postItems = posts.map((post) => ({
     title: post.data.title,

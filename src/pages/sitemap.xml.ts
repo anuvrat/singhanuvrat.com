@@ -2,8 +2,8 @@ import type { APIRoute } from 'astro';
 import { getCollection } from 'astro:content';
 
 export const GET: APIRoute = async ({ site }) => {
-  const posts = await getCollection('posts', ({ data }) => !data.draft);
-  const nuggets = await getCollection('nuggets', ({ data }) => !data.draft);
+  const posts = await getCollection('posts', ({ data }) => import.meta.env.DEV || !data.draft);
+  const nuggets = await getCollection('nuggets', ({ data }) => import.meta.env.DEV || !data.draft);
   const siteUrl = (site?.toString() || 'https://singhanuvrat.com').replace(/\/$/, '');
 
   // Static pages

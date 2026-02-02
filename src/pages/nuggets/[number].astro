@@ -4,7 +4,7 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
 import { formatDate } from '../../utils/formatDate';
 
 export async function getStaticPaths() {
-  const nuggets = await getCollection('nuggets', ({ data }) => !data.draft);
+  const nuggets = await getCollection('nuggets', ({ data }) => import.meta.env.DEV || !data.draft);
 
   return nuggets.map((nugget) => ({
     params: { number: nugget.data.number.toString() },
@@ -16,7 +16,7 @@ const { nugget } = Astro.props;
 const { Content } = await nugget.render();
 
 // Get prev/next nuggets for navigation
-const allNuggets = (await getCollection('nuggets', ({ data }) => !data.draft))
+const allNuggets = (await getCollection('nuggets', ({ data }) => import.meta.env.DEV || !data.draft))
   .sort((a, b) => a.data.number - b.data.number);
 
 const currentIndex = allNuggets.findIndex((n) => n.data.number === nugget.data.number);

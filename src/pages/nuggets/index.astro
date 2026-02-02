@@ -2,7 +2,7 @@
 import { getCollection } from 'astro:content';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 
-const nuggets = (await getCollection('nuggets', ({ data }) => !data.draft))
+const nuggets = (await getCollection('nuggets', ({ data }) => import.meta.env.DEV || !data.draft))
   .sort((a, b) => b.data.number - a.data.number);
 
 const hasNuggets = nuggets.length > 0;
