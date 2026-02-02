@@ -1,6 +1,6 @@
 # CLAUDE.md
 
-This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+This file provides project-specific guidance. See `~/.claude/CLAUDE.md` for global workflow instructions.
 
 ## Project Overview
 
@@ -36,6 +36,9 @@ pnpm run preview  # Preview production build
 │   └── skills/                # Claude automation workflows
 │       ├── prepare-post.md    # Workflow for new blog posts
 │       └── prepare-nugget.md  # Workflow for bi-weekly nuggets
+├── tasks/
+│   ├── todo.md                # Current task tracking
+│   └── lessons.md             # Patterns learned from corrections
 ├── .github/
 │   └── workflows/
 │       └── deploy.yml         # CI/CD: build → link-check → lighthouse → deploy
