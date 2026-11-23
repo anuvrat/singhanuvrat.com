@@ -4,32 +4,22 @@ import type { APIContext } from 'astro';
 
 export async function GET(context: APIContext) {
   const posts = await getCollection('posts', ({ data }) => import.meta.env.DEV || !data.draft);
-  const nuggets = await getCollection('nuggets', ({ data }) => import.meta.env.DEV || !data.draft);
 
-  const postItems = posts.map((post) => ({
-    title: post.data.title,
-    pubDate: post.data.pubDate,
-    description: post.data.description,
-    link: `/${post.slug}/`,
-    categories: post.data.tags,
-  }));
-
-  const nuggetItems = nuggets.map((nugget) => ({
-    title: nugget.data.title,
-    pubDate: nugget.data.pubDate,
-    description: `Curated links and commentary: ${nugget.data.dateRange}`,
-    link: `/nuggets/${nugget.data.number}/`,
-    categories: ['nuggets'],
-  }));
-
-  const allItems = [...postItems, ...nuggetItems]
+  const items = posts
+    .map((post) => ({
+      title: post.data.title,
+      pubDate: post.data.pubDate,
+      description: post.data.description,
+      link: `/${post.slug}/`,
+      categories: post.data.tags,
+    }))
     .sort((a, b) => b.pubDate.valueOf() - a.pubDate.valueOf());
 
   return rss({
     title: 'Anuvrat — Thinking in systems',
     description: 'Thoughts on distributed systems, infrastructure, and technology',
     site: context.site!,
-    items: allItems,
+    items,
     customData: `<language>en-us</language>`,
   });
 }
