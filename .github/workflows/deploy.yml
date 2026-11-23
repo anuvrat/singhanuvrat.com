@@ -68,6 +68,7 @@ jobs:
             --no-progress
             --accept 200,204,301,302,308
             --exclude-path './dist/rss.xml'
+            --root-dir ${{ github.workspace }}/dist
             './dist/**/*.html'
           failIfEmpty: false
           fail: true
