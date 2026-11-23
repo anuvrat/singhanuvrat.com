@@ -2,16 +2,29 @@
 import { ClientRouter } from 'astro:transitions';
 import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
+import Logo from '../components/Logo.astro';
+import TableOfContents from '../components/TableOfContents.astro';
 
 interface Props {
   title: string;
   description?: string;
   ogImage?: string;
   hasMath?: boolean;
+  variant?: 'default' | 'post';
+  headings?: { depth: number; slug: string; text: string }[];
 }
 
-const { title, description = "Thinking in systems", ogImage, hasMath = false } = Astro.props;
+const {
+  title,
+  description = "Thinking in systems",
+  ogImage,
+  hasMath = false,
+  variant = 'default',
+  headings = [],
+} = Astro.props;
+
 const canonicalURL = new URL(Astro.url.pathname, Astro.site);
+const showToc = variant === 'post' && headings.filter((heading) => heading.depth === 2).length > 1;
 ---
 
 <!doctype html>
@@ -19,32 +32,32 @@ const canonicalURL = new URL(Astro.url.pathname, Astro.site);
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="color-scheme" content="light dark" />
+    <meta name="theme-color" media="(prefers-color-scheme: light)" content="#ffffff" />
+    <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#121418" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="preload" href="/fonts/JetBrainsMono-Regular.woff2" as="font" type="font/woff2" crossorigin />
+    <link rel="preload" href="/fonts/JetBrainsMono-Bold.woff2" as="font" type="font/woff2" crossorigin />
 
-    <!-- Primary Meta Tags -->
     <title>{title}</title>
     <meta name="title" content={title} />
     <meta name="description" content={description} />
     <link rel="canonical" href={canonicalURL} />
 
-    <!-- Open Graph / Facebook -->
     <meta property="og:type" content="website" />
     <meta property="og:url" content={canonicalURL} />
     <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />
     {ogImage && <meta property="og:image" content={ogImage} />}
 
-    <!-- Twitter -->
     <meta property="twitter:card" content="summary_large_image" />
     <meta property="twitter:url" content={canonicalURL} />
     <meta property="twitter:title" content={title} />
     <meta property="twitter:description" content={description} />
     {ogImage && <meta property="twitter:image" content={ogImage} />}
 
-    <!-- RSS -->
     <link rel="alternate" type="application/rss+xml" title="RSS Feed" href="/rss.xml" />
 
-    {/* KaTeX for math rendering - only load when needed */}
     {hasMath && (
       <>
         <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin />
@@ -53,44 +66,44 @@ const canonicalURL = new URL(Astro.url.pathname, Astro.site);
       </>
     )}
 
-    <!-- View transitions for smooth page navigation -->
     <ClientRouter />
 
     <style is:global>
       @import '../styles/global.css';
     </style>
-
-    <!-- Dark mode script (inline to prevent flash) -->
-    <script is:inline>
-      function applyTheme() {
-        const theme = localStorage.getItem('theme');
-        if (theme === 'dark' || (!theme && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
-          document.documentElement.classList.add('dark');
-        } else {
-          document.documentElement.classList.remove('dark');
-        }
-      }
-
-      // Apply on initial load
-      applyTheme();
-
-      // Re-apply after View Transitions swap
-      document.addEventListener('astro:after-swap', applyTheme);
-    </script>
   </head>
   <body>
-    <Header />
-    <main class="main-content">
-      <slot />
-    </main>
-    <Footer />
+    {variant === 'post' ? (
+      <div class:list={['post-wrap', { 'has-toc': showToc }]}>
+        {showToc && <TableOfContents headings={headings} />}
+        <div class="col">
+          <header class="back">
+            <a class="back-link" href="/">← Writing</a>
+            <a class="brand-mark" href="/">
+              <span>Anuvrat</span>
+              <Logo size={24} />
+            </a>
+          </header>
+          <main>
+            <slot />
+          </main>
+          <Footer />
+        </div>
+      </div>
+    ) : (
+      <div class="col">
+        <Header />
+        <main>
+          <slot />
+        </main>
+        <Footer />
+      </div>
+    )}
 
-    <!-- Post enhancements: anchor links + code copy buttons -->
     <script>
       function initPostFeatures() {
-        // Anchor links on headings (click to copy URL)
         document.querySelectorAll('.post-content h2[id], .post-content h3[id]').forEach(heading => {
-          if (heading.querySelector('.anchor')) return; // Already initialized
+          if (heading.querySelector('.anchor')) return;
 
           const anchor = document.createElement('a');
           anchor.className = 'anchor';
@@ -114,26 +127,22 @@ const canonicalURL = new URL(Astro.url.pathname, Astro.site);
           heading.insertBefore(anchor, heading.firstChild);
         });
 
-        // Copy button for code blocks
-        document.querySelectorAll('pre').forEach((pre) => {
-          if (pre.querySelector('.copy-button')) return; // Already initialized
-
+        document.querySelectorAll('pre.astro-code').forEach((pre) => {
+          if (pre.querySelector('.copy-button')) return;
           const button = document.createElement('button');
           button.className = 'copy-button';
           button.setAttribute('aria-label', 'Copy code');
           button.textContent = 'Copy';
-
           button.addEventListener('click', async () => {
             const code = pre.querySelector('code')?.textContent || '';
             await navigator.clipboard.writeText(code);
-            button.textContent = 'Copied!';
+            button.textContent = 'Copied';
             button.classList.add('copied');
             setTimeout(() => {
               button.textContent = 'Copy';
               button.classList.remove('copied');
             }, 2000);
           });
-
           pre.appendChild(button);
         });
       }
@@ -143,48 +152,3 @@ const canonicalURL = new URL(Astro.url.pathname, Astro.site);
     </script>
   </body>
 </html>
-
-<style is:global>
-  .main-content {
-    max-width: var(--max-width);
-    margin: 0 auto;
-    padding: 0 var(--space-md);
-    /* Header ~60px + Footer ~80px + margins ~60px = ~200px */
-    min-height: calc(100vh - 200px);
-  }
-
-  .copy-button {
-    position: absolute;
-    top: 0.5rem;
-    right: 0.5rem;
-    padding: 0.25rem 0.5rem;
-    background: var(--bg);
-    border: 1px solid var(--border);
-    border-radius: 4px;
-    cursor: pointer;
-    font-family: var(--font-mono);
-    font-size: 0.75rem;
-    color: var(--text-muted);
-    opacity: 0;
-    transition: opacity 0.2s ease, color 0.2s ease;
-  }
-
-  pre:hover .copy-button {
-    opacity: 1;
-  }
-
-  /* Always show copy button on touch devices */
-  @media (hover: none) {
-    .copy-button {
-      opacity: 0.7;
-    }
-  }
-
-  .copy-button:hover {
-    color: var(--text);
-  }
-
-  .copy-button.copied {
-    color: var(--accent);
-  }
-</style>

@@ -1,77 +1,34 @@
 {
-  "name": "Anuvrat Dark",
+  "name": "Monograph Dark",
   "type": "dark",
   "colors": {
-    "editor.background": "#2a2a2a",
-    "editor.foreground": "#e0e0e0"
+    "editor.background": "#1a1f27",
+    "editor.foreground": "#e6e9ee"
   },
   "tokenColors": [
     {
       "scope": ["comment", "punctuation.definition.comment"],
-      "settings": {
-        "foreground": "#777777",
-        "fontStyle": "italic"
-      }
+      "settings": { "foreground": "#a3acb8", "fontStyle": "italic" }
     },
     {
       "scope": ["string", "string.quoted"],
-      "settings": {
-        "foreground": "#7ec699"
-      }
+      "settings": { "foreground": "#8fceb0" }
     },
     {
       "scope": ["constant.numeric", "constant.language"],
-      "settings": {
-        "foreground": "#e0a870"
-      }
+      "settings": { "foreground": "#e3b089" }
     },
     {
-      "scope": ["keyword", "storage.type", "storage.modifier"],
-      "settings": {
-        "foreground": "#6db3c2"
-      }
+      "scope": ["keyword", "storage.type", "storage.modifier", "entity.name.tag", "support.type", "entity.other.attribute-name"],
+      "settings": { "foreground": "#9bb6dc" }
     },
     {
-      "scope": ["entity.name.function", "support.function"],
-      "settings": {
-        "foreground": "#c2a3d8"
-      }
+      "scope": ["entity.name.function", "support.function", "entity.name.class"],
+      "settings": { "foreground": "#d2c4ea" }
     },
     {
-      "scope": ["entity.name.type", "entity.name.class", "support.type", "support.class"],
-      "settings": {
-        "foreground": "#6db3c2"
-      }
-    },
-    {
-      "scope": ["variable", "variable.other"],
-      "settings": {
-        "foreground": "#e0e0e0"
-      }
-    },
-    {
-      "scope": ["entity.name.tag"],
-      "settings": {
-        "foreground": "#6db3c2"
-      }
-    },
-    {
-      "scope": ["entity.other.attribute-name"],
-      "settings": {
-        "foreground": "#e0a870"
-      }
-    },
-    {
-      "scope": ["punctuation", "meta.brace"],
-      "settings": {
-        "foreground": "#999999"
-      }
-    },
-    {
-      "scope": ["keyword.operator"],
-      "settings": {
-        "foreground": "#999999"
-      }
+      "scope": ["variable", "variable.other", "punctuation", "keyword.operator", "meta.brace"],
+      "settings": { "foreground": "#e6e9ee" }
     }
   ]
 }

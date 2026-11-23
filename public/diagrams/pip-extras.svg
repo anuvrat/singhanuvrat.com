@@ -1,0 +1,25 @@
+<svg viewBox="0 0 640 220" width="640" height="220" xmlns="http://www.w3.org/2000/svg">
+<defs>
+<marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto">
+<path d="M0,0 L10,5 L0,10 z" fill="var(--d-accent)"/>
+</marker>
+</defs>
+<rect x="40" y="85" width="120" height="46" rx="6" fill="var(--d-fill-strong)" stroke="var(--d-accent)"/>
+<text x="100.0" y="112.0" font-family="JetBrains Mono, monospace" font-size="11" fill="var(--d-ink)" text-anchor="middle" font-weight="700">pkg.whl</text>
+<line x1="162" y1="108" x2="228" y2="108" stroke="var(--d-accent)" stroke-width="1.4" marker-end="url(#arrow)"/>
+<rect x="230" y="40" width="170" height="136" rx="6" fill="var(--d-fill)" stroke="var(--d-stroke)" stroke-dasharray="4 3"/>
+<text x="315.0" y="112.0" font-family="JetBrains Mono, monospace" font-size="11" fill="var(--d-text)" text-anchor="middle" font-weight="400">
+</text>
+<text x="245" y="62" font-family="JetBrains Mono, monospace" font-size="10" fill="var(--d-faint)">*.dist-info/</text>
+<rect x="248" y="74" width="134" height="30" rx="6" fill="var(--d-fill)" stroke="var(--d-accent)"/>
+<text x="315.0" y="93.0" font-family="JetBrains Mono, monospace" font-size="11" fill="var(--d-ink)" text-anchor="middle" font-weight="400">METADATA</text>
+<rect x="248" y="112" width="134" height="30" rx="6" fill="var(--d-fill)" stroke="var(--d-stroke)"/>
+<text x="315.0" y="131.0" font-family="JetBrains Mono, monospace" font-size="11" fill="var(--d-text)" text-anchor="middle" font-weight="400">RECORD</text>
+<text x="315" y="162" font-family="JetBrains Mono, monospace" font-size="10" fill="var(--d-faint)" text-anchor="middle">WHEEL</text>
+<line x1="384" y1="89" x2="458" y2="89" stroke="var(--d-accent)" stroke-width="1.4" marker-end="url(#arrow)"/>
+<rect x="460" y="70" width="150" height="38" rx="6" fill="var(--d-fill)" stroke="var(--d-accent)"/>
+<text x="535.0" y="93.0" font-family="JetBrains Mono, monospace" font-size="11" fill="var(--d-ink)" text-anchor="middle" font-weight="400">Provides-Extra</text>
+<rect x="460" y="124" width="150" height="38" rx="6" fill="var(--d-fill)" stroke="var(--d-stroke)" stroke-dasharray="4 3"/>
+<text x="535.0" y="147.0" font-family="JetBrains Mono, monospace" font-size="11" fill="var(--d-faint)" text-anchor="middle" font-weight="400">setup.py extras</text>
+<text x="535" y="185" font-family="JetBrains Mono, monospace" font-size="10" fill="var(--d-faint)" text-anchor="middle">declared ≠ packaged?</text>
+</svg>

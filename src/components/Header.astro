@@ -1,96 +1,71 @@
 ---
-import ThemeToggle from './ThemeToggle.astro';
+import Logo from './Logo.astro';
 
-interface Props {
-  showTagline?: boolean;
-}
-
-const { showTagline = true } = Astro.props;
+const isHome = Astro.url.pathname === '/';
 ---
 
-<header>
-  <div class="header-content">
-    <div class="header-left">
-      <a href="/" class="site-title">Anuvrat</a>
-      {showTagline && <span class="tagline">Thinking in systems</span>}
-    </div>
-    <div class="header-right">
-      <ThemeToggle />
-    </div>
-  </div>
+<header class="site-header">
+  <a class="brand" href="/">
+    <Logo size={34} />
+    <span>
+      <b>Anuvrat</b>
+      <small>Thinking in systems</small>
+    </span>
+  </a>
+  <nav aria-label="Site">
+    <a href="/" class:list={{ on: isHome }} aria-current={isHome ? 'page' : undefined}>Writing</a>
+    <a href="/rss.xml">RSS</a>
+  </nav>
 </header>
 
 <style>
-  header {
-    padding: var(--space-lg) 0;
-    border-bottom: 1px solid var(--border);
-    margin-bottom: var(--space-xl);
-  }
-
-  .header-content {
-    max-width: var(--max-width);
-    margin: 0 auto;
-    padding: 0 var(--space-md);
+  .site-header {
+    padding: 56px 0 28px;
+    border-bottom: 1px solid var(--rule);
     display: flex;
+    align-items: center;
     justify-content: space-between;
-    align-items: center;
+    gap: 16px;
   }
 
-  .header-left {
+  .brand {
     display: flex;
-    flex-direction: column;
-    gap: var(--space-xs);
+    align-items: center;
+    gap: 14px;
+    color: var(--ink);
+    min-width: 0;
   }
 
-  .site-title {
-    font-size: var(--text-xl);
+  .brand b {
+    display: block;
     font-weight: 700;
-    color: var(--text);
-    text-decoration: none;
+    font-size: 15px;
+    letter-spacing: -0.01em;
+    line-height: 1.2;
   }
 
-  .site-title:hover {
-    color: var(--accent);
-    text-decoration: none;
+  .brand small {
+    display: block;
+    color: var(--muted);
+    font-size: 12.5px;
+    margin-top: 3px;
+    line-height: 1.3;
   }
 
-  .tagline {
-    font-size: var(--text-sm);
-    color: var(--text-muted);
-  }
-
-  .header-right {
+  nav {
     display: flex;
     align-items: center;
-    gap: var(--space-md);
+    gap: 26px;
+    font-size: 13px;
+    color: var(--muted);
+    flex-shrink: 0;
   }
 
-  @media (max-width: 640px) {
-    .header-content {
-      gap: var(--space-sm);
-    }
+  nav a.on,
+  nav a:hover { color: var(--ink); }
 
-    .site-title {
-      font-size: var(--text-lg);
-    }
-
-    .tagline {
-      font-size: 0.7rem;
-    }
-
-    .header-right {
-      gap: var(--space-sm);
-    }
-  }
-
-  /* Very narrow screens - hide tagline to prevent crowding */
-  @media (max-width: 400px) {
-    .tagline {
-      display: none;
-    }
-
-    .header-left {
-      gap: 0;
-    }
+  @media (max-width: 700px) {
+    .site-header { padding: 36px 0 22px; }
+    nav { display: none; }
   }
 </style>

@@ -1,0 +1,22 @@
+<svg viewBox="0 0 640 220" width="640" height="220" xmlns="http://www.w3.org/2000/svg">
+<defs>
+<marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto">
+<path d="M0,0 L10,5 L0,10 z" fill="var(--d-accent)"/>
+</marker>
+</defs>
+<rect x="40" y="85" width="140" height="46" rx="6" fill="var(--d-fill-strong)" stroke="var(--d-accent)"/>
+<text x="110.0" y="112.0" font-family="JetBrains Mono, monospace" font-size="11" fill="var(--d-ink)" text-anchor="middle" font-weight="700">DataFrame</text>
+<line x1="182" y1="108" x2="250" y2="108" stroke="var(--d-accent)" stroke-width="1.4" marker-end="url(#arrow)"/>
+<rect x="252" y="85" width="110" height="46" rx="6" fill="var(--d-fill)" stroke="var(--d-stroke)"/>
+<text x="307.0" y="112.0" font-family="JetBrains Mono, monospace" font-size="11" fill="var(--d-text)" text-anchor="middle" font-weight="400">overwrite</text>
+<line x1="364" y1="108" x2="398" y2="88" stroke="var(--d-accent)" stroke-width="1.4" marker-end="url(#arrow)"/>
+<rect x="400" y="30" width="200" height="32" rx="6" fill="var(--d-fill)" stroke="var(--d-stroke)"/>
+<text x="500.0" y="50.0" font-family="JetBrains Mono, monospace" font-size="11" fill="var(--d-muted)" text-anchor="middle" font-weight="400">part=a</text>
+<rect x="400" y="72" width="200" height="32" rx="6" fill="var(--d-fill-strong)" stroke="var(--d-accent)"/>
+<text x="500.0" y="92.0" font-family="JetBrains Mono, monospace" font-size="11" fill="var(--d-ink)" text-anchor="middle" font-weight="700">part=b</text>
+<rect x="400" y="114" width="200" height="32" rx="6" fill="var(--d-fill)" stroke="var(--d-stroke)"/>
+<text x="500.0" y="134.0" font-family="JetBrains Mono, monospace" font-size="11" fill="var(--d-muted)" text-anchor="middle" font-weight="400">part=c</text>
+<rect x="400" y="156" width="200" height="32" rx="6" fill="var(--d-fill)" stroke="var(--d-stroke)"/>
+<text x="500.0" y="176.0" font-family="JetBrains Mono, monospace" font-size="11" fill="var(--d-muted)" text-anchor="middle" font-weight="400">part=d</text>
+<text x="500" y="208" font-family="JetBrains Mono, monospace" font-size="10" fill="var(--d-faint)" text-anchor="middle">only the touched partition is replaced</text>
+</svg>

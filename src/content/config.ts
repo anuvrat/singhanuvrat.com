@@ -9,6 +9,9 @@ const posts = defineCollection({
     updatedDate: z.coerce.date().optional(),
     draft: z.boolean().default(false),
     ogImage: z.string().optional(),
+    // Optional card and post illustration, e.g. "/diagrams/example.svg".
+    // Omit it and the card renders with no diagram panel.
+    cover: z.string().optional(),
     tags: z.array(z.string()).default([]),
     difficulty: z.enum(['intro', 'intermediate', 'deep-dive']).optional(),
     series: z.string().optional(),

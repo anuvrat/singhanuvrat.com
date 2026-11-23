@@ -2,9 +2,9 @@
 import type { CollectionEntry } from 'astro:content';
 import BaseLayout from './BaseLayout.astro';
 import ArticleSchema from '../components/ArticleSchema.astro';
+import Diagram from '../components/Diagram.astro';
 import RelatedPosts from '../components/RelatedPosts.astro';
 import SeriesNav from '../components/SeriesNav.astro';
-import TocDots from '../components/TocDots.astro';
 import { getReadingTime } from '../utils/readingTime';
 import { formatDate, UPDATED_THRESHOLD_MS } from '../utils/formatDate';
 import { findRelatedPosts } from '../utils/relatedPosts';
@@ -17,13 +17,15 @@ interface Props {
   headings: { depth: number; slug: string; text: string }[];
   body: string;
   ogImage?: string;
+  cover?: string;
   currentPost: CollectionEntry<'posts'>;
   allPosts: CollectionEntry<'posts'>[];
 }
 
-const { title, description, pubDate, updatedDate, headings, body, ogImage, currentPost, allPosts } = Astro.props;
+const {
+  title, description, pubDate, updatedDate, headings, body, ogImage, cover, currentPost, allPosts,
+} = Astro.props;
 
-// Difficulty display mapping
 const difficultyLabels: Record<string, string> = {
   'intro': 'Intro',
   'intermediate': 'Intermediate',
@@ -32,27 +34,26 @@ const difficultyLabels: Record<string, string> = {
 const difficulty = currentPost.data.difficulty;
 const difficultyLabel = difficulty ? difficultyLabels[difficulty] : null;
 
-// Auto-generate OG image URL if not provided
 const slug = Astro.url.pathname.replace(/^\//, '').replace(/\/$/, '');
 const autoOgImage = new URL(`/og/${slug}.png`, Astro.site).toString();
 const finalOgImage = ogImage || autoOgImage;
-
 const formattedPubDate = formatDate(pubDate);
 const formattedUpdatedDate = updatedDate ? formatDate(updatedDate) : null;
-
-// Show updated date only if it's more than 7 days after pubDate
-const showUpdated = updatedDate &&
-  (updatedDate.getTime() - pubDate.getTime()) > UPDATED_THRESHOLD_MS;
-
+const showUpdated = updatedDate && (updatedDate.getTime() - pubDate.getTime()) > UPDATED_THRESHOLD_MS;
 const readingTime = getReadingTime(body);
 const canonicalUrl = new URL(Astro.url.pathname, Astro.site).toString();
 const relatedPosts = findRelatedPosts(currentPost, allPosts, 3);
-
-// Detect if post contains math (LaTeX delimiters)
 const hasMath = /\$\$[\s\S]+?\$\$|\$[^$\n]+?\$/.test(body);
 ---
 
-<BaseLayout title={`${title} — Anuvrat`} description={description} ogImage={finalOgImage} hasMath={hasMath}>
+<BaseLayout
+  title={`${title} — Anuvrat`}
+  description={description}
+  ogImage={finalOgImage}
+  hasMath={hasMath}
+  variant="post"
+  headings={headings}
+>
   <ArticleSchema
     title={title}
     description={description}
@@ -62,148 +63,72 @@ const hasMath = /\$\$[\s\S]+?\$\$|\$[^$\n]+?\$/.test(body);
     ogImage={finalOgImage}
   />
 
-  <TocDots headings={headings} />
-
-  <article class="post">
-    <div class="post-layout">
-      <div class="content-column">
-        <header class="post-header">
-          <h1>{title}</h1>
-          <div class="post-meta">
-            <span class="author">Anuvrat Singh</span>
-            <span class="separator">·</span>
-            <time datetime={pubDate.toISOString()}>{formattedPubDate}</time>
-            <span class="separator">·</span>
-            <span>{readingTime}</span>
-            {difficultyLabel && (
-              <>
-                <span class="separator">·</span>
-                <span class={`difficulty difficulty-${difficulty}`}>{difficultyLabel}</span>
-              </>
-            )}
-            {showUpdated && (
-              <>
-                <span class="separator">·</span>
-                <span class="updated">Updated {formattedUpdatedDate}</span>
-              </>
-            )}
-          </div>
-        </header>
-
-        <div class="post-content">
-          <slot />
-        </div>
-
-        <footer class="post-footer">
-          {currentPost.data.series ? (
-            <SeriesNav currentPost={currentPost} allPosts={allPosts} />
-          ) : (
-            <RelatedPosts posts={relatedPosts} />
-          )}
-        </footer>
-      </div>
-
-      <aside class="margin-column">
-        <!-- Margin notes will be positioned here via CSS -->
-      </aside>
+  <article>
+    <h1>{title}</h1>
+    <div class="meta">
+      <span>Anuvrat Singh</span>
+      <span aria-hidden="true">·</span>
+      <time datetime={pubDate.toISOString()}>{formattedPubDate}</time>
+      <span aria-hidden="true">·</span>
+      <span>{readingTime}</span>
+      {difficultyLabel && <span class="pill">{difficultyLabel}</span>}
+      {showUpdated && (
+        <>
+          <span aria-hidden="true">·</span>
+          <span>Updated {formattedUpdatedDate}</span>
+        </>
+      )}
+    </div>
+    {cover && <Diagram src={cover} lead />}
+    <div class="post-content">
+      <slot />
+    </div>
+    <div class="post-end">
+      {currentPost.data.series ? (
+        <SeriesNav currentPost={currentPost} allPosts={allPosts} />
+      ) : (
+        <RelatedPosts posts={relatedPosts} />
+      )}
     </div>
   </article>
 </BaseLayout>
 
 <style>
-  .post {
-    max-width: var(--max-width);
-    margin: 0 auto;
+  h1 {
+    font-size: 28px;
+    line-height: 1.35;
+    letter-spacing: -0.02em;
+    margin: 48px 0 18px;
+    font-weight: 700;
   }
 
-  .post-layout {
-    display: grid;
-    grid-template-columns: 1fr;
-    gap: var(--space-lg);
-  }
-
-  @media (min-width: 1024px) {
-    .post-layout {
-      grid-template-columns: var(--content-width) var(--sidebar-width);
-      gap: var(--space-xl);
-    }
-  }
-
-  .margin-column {
-    display: none;
-  }
-
-  @media (min-width: 1024px) {
-    .margin-column {
-      display: block;
-    }
-  }
-
-  .content-column {
-    min-width: 0; /* Prevent overflow */
-  }
-
-  .post-header {
-    margin-bottom: var(--space-xl);
-  }
-
-  .post-header h1 {
-    font-size: var(--text-2xl);
-    margin-bottom: var(--space-sm);
-  }
-
-  .post-meta {
+  .meta {
+    font-size: 12.5px;
+    color: var(--muted);
     display: flex;
     flex-wrap: wrap;
-    gap: var(--space-sm);
-    font-size: var(--text-sm);
-    color: var(--text-muted);
+    gap: 10px;
+    align-items: center;
+    margin-bottom: 34px;
   }
 
-  .author {
-    color: var(--text);
-    font-weight: 500;
-  }
-
-  .separator {
-    color: var(--text-muted);
-  }
-
-  .updated {
-    font-style: italic;
-  }
-
-  .difficulty {
-    font-size: 0.7rem;
-    padding: 0.15em 0.5em;
-    border-radius: 3px;
+  .pill {
+    border: 1px solid var(--rule);
+    border-radius: 4px;
+    padding: 2px 7px;
+    font-size: 11px;
     text-transform: uppercase;
-    letter-spacing: 0.03em;
-    font-weight: 500;
+    letter-spacing: 0.05em;
+    line-height: 1.4;
   }
 
-  .difficulty-intro {
-    background: var(--bg-secondary);
-    color: var(--text-muted);
+  .post-end {
+    margin-top: 48px;
+    padding-top: 28px;
+    border-top: 1px solid var(--rule);
   }
 
-  .difficulty-intermediate {
-    background: var(--bg-secondary);
-    color: var(--text);
-  }
-
-  .difficulty-deep-dive {
-    background: var(--bg-secondary);
-    color: var(--accent);
-  }
-
-  .post-content {
-    position: relative;
-  }
-
-  .post-footer {
-    margin-top: var(--space-2xl);
-    padding-top: var(--space-xl);
-    border-top: 1px solid var(--border);
+  @media (max-width: 700px) {
+    h1 { font-size: 23px; }
   }
 </style>

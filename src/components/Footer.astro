@@ -1,48 +1,34 @@
 ---
+const year = new Date().getFullYear();
 ---
 
 <footer>
-  <div class="footer-content">
-    <nav class="footer-links">
-      <a href="/rss.xml">RSS</a>
-      <span class="separator">·</span>
-      <a href="https://github.com/anuvrat" target="_blank" rel="noopener noreferrer">GitHub</a>
-      <span class="separator">·</span>
-      <a href="https://twitter.com/singhanuvrat" target="_blank" rel="noopener noreferrer">X</a>
-      <span class="separator">·</span>
-      <a href="https://linkedin.com/in/singhanuvrat" target="_blank" rel="noopener noreferrer">LinkedIn</a>
-    </nav>
-  </div>
+  <span>© {year} Anuvrat Singh</span>
+  <span class="links">
+    <a href="/rss.xml">RSS</a>
+    <a href="https://github.com/anuvrat" target="_blank" rel="noopener noreferrer">GitHub</a>
+    <a href="https://twitter.com/singhanuvrat" target="_blank" rel="noopener noreferrer">X</a>
+    <a href="https://linkedin.com/in/singhanuvrat" target="_blank" rel="noopener noreferrer">LinkedIn</a>
+  </span>
 </footer>
 
 <style>
   footer {
-    padding: var(--space-xl) 0;
-    margin-top: var(--space-2xl);
-    border-top: 1px solid var(--border);
-  }
-
-  .footer-content {
-    max-width: var(--max-width);
-    margin: 0 auto;
-    padding: 0 var(--space-md);
-  }
-
-  .footer-links {
+    padding: 44px 0 72px;
     display: flex;
-    gap: var(--space-sm);
-    font-size: var(--text-sm);
+    justify-content: space-between;
+    gap: 16px;
+    font-size: 12.5px;
+    color: var(--muted);
   }
 
-  .footer-links a {
-    color: var(--text-muted);
-  }
+  .links { display: flex; flex-wrap: wrap; }
+  .links a { margin-left: 20px; color: inherit; }
+  .links a:first-child { margin-left: 0; }
+  a:hover { color: var(--ink); }
 
-  .footer-links a:hover {
-    color: var(--accent);
-  }
-
-  .separator {
-    color: var(--text-muted);
+  @media (max-width: 700px) {
+    footer { flex-direction: column; gap: 14px; }
+    .links a { margin-left: 0; margin-right: 20px; }
   }
 </style>
