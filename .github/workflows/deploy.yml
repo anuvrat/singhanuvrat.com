@@ -3,6 +3,8 @@ name: Build, Check, and Deploy
 on:
   push:
     branches: [main]
+  pull_request:
+    branches: [main]
   workflow_dispatch:
 
 env:
@@ -96,6 +98,9 @@ jobs:
           temporaryPublicStorage: true
 
   deploy:
+    # Production deploy stays on main. Pull requests only run the checks
+    # required to update the protected main branch.
+    if: github.event_name != 'pull_request'
     needs: [link-check, lighthouse]
     runs-on: ubuntu-latest
     steps:
