@@ -36,7 +36,7 @@ Read the post thoroughly. Understand:
 Create an SEO-friendly slug:
 - 2-4 words capturing the essence
 - Lowercase, hyphenated
-- Examples: `google-file-system`, `kubernetes-operator-pattern`, `delta-lake-deep-dive`
+- Examples: `kubernetes-operator-pattern`, `debugging-pip-extras`, `hive-json-parsing`
 
 Rename the file using `git mv`.
 
@@ -85,7 +85,7 @@ Assign 2-4 tags. Prefer existing tags; propose new ones only if nothing fits.
 ### Step 5: Series Analysis
 
 Current series:
-- `google-infrastructure`: GFS → Bigtable → Spanner (Google's storage evolution)
+- None published. Add `series` and `seriesOrder` only when a post clearly starts or continues a multi-part sequence.
 
 Check if the new post:
 1. Fits an existing series

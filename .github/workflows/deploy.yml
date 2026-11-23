@@ -3,6 +3,8 @@ name: Build, Check, and Deploy
 on:
   push:
     branches: [main]
+  pull_request:
+    branches: [main]
   workflow_dispatch:
 
 env:
@@ -29,14 +31,8 @@ jobs:
       - name: Install dependencies
         run: pnpm install
 
-      - name: Install Vercel CLI
-        run: pnpm add -g vercel
-
-      - name: Pull Vercel project settings
-        run: vercel pull --yes --environment=production --token=${{ secrets.VERCEL_TOKEN }}
-
-      - name: Build with Vercel
-        run: vercel build --prod --token=${{ secrets.VERCEL_TOKEN }}
+      - name: Build site
+        run: pnpm run build
 
       - name: Upload dist artifact (for checks)
         uses: actions/upload-artifact@v4
@@ -72,6 +68,7 @@ jobs:
             --no-progress
             --accept 200,204,301,302,308
             --exclude-path './dist/rss.xml'
+            --root-dir ${{ github.workspace }}/dist
             './dist/**/*.html'
           failIfEmpty: false
           fail: true
@@ -96,6 +93,9 @@ jobs:
           temporaryPublicStorage: true
 
   deploy:
+    # Production deploy stays on main. Pull requests only run the checks
+    # required to update the protected main branch.
+    if: github.event_name != 'pull_request'
     needs: [link-check, lighthouse]
     runs-on: ubuntu-latest
     steps:

@@ -34,8 +34,7 @@ pnpm run preview  # Preview production build
 .
 ├── .claude/
 │   └── skills/                # Claude automation workflows
-│       ├── prepare-post.md    # Workflow for new blog posts
-│       └── prepare-nugget.md  # Workflow for bi-weekly nuggets
+│       └── prepare-post.md    # Workflow for new blog posts
 ├── tasks/
 │   ├── todo.md                # Current task tracking
 │   └── lessons.md             # Patterns learned from corrections
@@ -51,7 +50,7 @@ pnpm run preview  # Preview production build
 ├── src/
 │   ├── components/
 │   │   ├── Header.astro           # Site header with title and theme toggle
-│   │   ├── Footer.astro           # Footer with About and RSS links
+│   │   ├── Footer.astro           # Footer with RSS and social links
 │   │   ├── PostCard.astro         # Post list item (title, description, date)
 │   │   ├── MarginNote.astro       # Sidenotes with auto-numbering
 │   │   ├── ThemeToggle.astro      # Dark/light mode switch
@@ -62,24 +61,19 @@ pnpm run preview  # Preview production build
 │   │   ├── PostImage.astro        # Image with lazy loading and optional caption
 │   │   ├── Mermaid.astro          # Mermaid diagram renderer with dark mode
 │   │   ├── ArticleSchema.astro    # JSON-LD for blog posts
-│   │   ├── PersonSchema.astro     # JSON-LD for author (About page)
 │   │   └── WebsiteSchema.astro    # JSON-LD for site (homepage)
 │   ├── layouts/
 │   │   ├── BaseLayout.astro       # HTML shell, meta tags, dark mode script
 │   │   └── PostLayout.astro       # Two-column post template with margin notes
 │   ├── pages/
 │   │   ├── index.astro            # Homepage (posts grouped by year)
-│   │   ├── about.astro            # About page with PersonSchema
 │   │   ├── 404.astro              # Custom 404 page
 │   │   ├── [...slug].astro        # Dynamic post routes
 │   │   ├── rss.xml.ts             # RSS feed
 │   │   ├── sitemap.xml.ts         # Dynamic sitemap
-│   │   ├── og/[...slug].png.ts    # Auto-generated OG images
-│   │   └── nuggets/
-│   │       ├── index.astro        # Nuggets list page
-│   │       └── [number].astro     # Individual nugget pages
+│   │   └── og/[...slug].png.ts    # Auto-generated OG images
 │   ├── content/
-│   │   ├── config.ts              # Content collection schema (posts + nuggets)
+│   │   ├── config.ts              # Content collection schema (posts)
 │   │   └── posts/                 # MDX blog posts
 │   ├── styles/
 │   │   ├── global.css             # CSS variables, typography, themes
@@ -147,65 +141,7 @@ ogImage: /custom-og.png     # Optional, overrides auto-generated
 
 ### Series
 
-Current series:
-- `google-infrastructure`: GFS → Bigtable → Spanner (Google's storage evolution)
-
-Series posts show navigation (prev/next) instead of related posts.
-
-## Nuggets (Bi-Weekly Digest)
-
-Curated links and commentary from research. Lighter than posts, more frequent.
-
-**Location:** `src/content/nuggets/`
-**URL:** `/nuggets/` (list) and `/nuggets/[number]/` (individual)
-
-### Quick Add Workflow
-
-1. Create a new `.mdx` file in `src/content/nuggets/`
-2. Run `/prepare-nugget` — Claude will assign number, dates, format
-
-### Frontmatter Schema
-
-```yaml
----
-title: "#1: Catchy subtitle here"
-number: 1
-dateRange: "Jan 15-28, 2025"
-pubDate: 2025-01-28
-# Optional personal touches
-song:
-  title: "Song Title"
-  artist: "Artist Name"
-  url: "https://..."  # optional
-podcast:
-  title: "Episode Title"
-  url: "https://..."  # optional
----
-```
-
-### Content Structure
-
-Bullet-point focused, not prose-heavy:
-
-```markdown
-## Quick Thoughts
-
-- Main point with commentary
-  - Supporting detail (nested, muted styling)
-  - Another detail
-- Another main point
-
-## Quick Links
-
-- [Article title](url) — One-line description
-```
-
-### Display Features
-
-- **List page:** Shows full title for each nugget
-- **Detail page:** Top-level bullets separated by muted lines, nested bullets indented and smaller
-- **Personal footer:** Song and podcast displayed as compact sign-off (optional)
-- **Navigation:** Shows prev/next with full titles
+No series is published right now. Posts that share a `series` slug show prev/next navigation instead of related posts.
 
 ## MDX Components
 
@@ -353,7 +289,7 @@ Push to `main` triggers the GitHub Actions workflow (`.github/workflows/deploy.y
 
 ## SEO
 
-- **JSON-LD:** ArticleSchema on posts, PersonSchema on About, WebsiteSchema on homepage
+- **JSON-LD:** ArticleSchema on posts, WebsiteSchema on homepage
 - **Sitemap:** Auto-generated at `/sitemap.xml`
 - **robots.txt:** Allows all, references sitemap, disallows `/_astro/` and `/og/`
 - **OG Images:** Auto-generated per post (dark bg, title text)

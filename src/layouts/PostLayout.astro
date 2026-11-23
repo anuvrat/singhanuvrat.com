@@ -70,7 +70,7 @@ const hasMath = /\$\$[\s\S]+?\$\$|\$[^$\n]+?\$/.test(body);
         <header class="post-header">
           <h1>{title}</h1>
           <div class="post-meta">
-            <a href="/about/" class="author">Anuvrat Singh</a>
+            <span class="author">Anuvrat Singh</span>
             <span class="separator">·</span>
             <time datetime={pubDate.toISOString()}>{formattedPubDate}</time>
             <span class="separator">·</span>
@@ -162,12 +162,7 @@ const hasMath = /\$\$[\s\S]+?\$\$|\$[^$\n]+?\$/.test(body);
 
   .author {
     color: var(--text);
-    text-decoration: none;
     font-weight: 500;
-  }
-
-  .author:hover {
-    color: var(--accent);
   }
 
   .separator {

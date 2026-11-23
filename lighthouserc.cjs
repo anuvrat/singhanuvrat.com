@@ -4,7 +4,7 @@ module.exports = {
       // Test against the built static files
       staticDistDir: './dist',
       // URLs to test (relative to staticDistDir)
-      url: ['/', '/about/', '/nuggets/'],
+      url: ['/', '/kubernetes-operator-pattern/'],
       // Number of runs per URL for more stable results
       numberOfRuns: 3,
     },

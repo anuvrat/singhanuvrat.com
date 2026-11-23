@@ -15,10 +15,6 @@ const { showTagline = true } = Astro.props;
       {showTagline && <span class="tagline">Thinking in systems</span>}
     </div>
     <div class="header-right">
-      <nav class="nav-links">
-        <a href="/nuggets/">Nuggets</a>
-        <a href="/about/">About</a>
-      </nav>
       <ThemeToggle />
     </div>
   </div>
@@ -69,22 +65,6 @@ const { showTagline = true } = Astro.props;
     gap: var(--space-md);
   }
 
-  .nav-links {
-    display: flex;
-    gap: var(--space-md);
-  }
-
-  .nav-links a {
-    font-size: var(--text-sm);
-    color: var(--text-muted);
-    text-decoration: none;
-    transition: color 0.2s ease;
-  }
-
-  .nav-links a:hover {
-    color: var(--accent);
-  }
-
   @media (max-width: 640px) {
     .header-content {
       gap: var(--space-sm);
@@ -100,14 +80,6 @@ const { showTagline = true } = Astro.props;
 
     .header-right {
       gap: var(--space-sm);
-    }
-
-    .nav-links {
-      gap: var(--space-sm);
-    }
-
-    .nav-links a {
-      font-size: 0.75rem;
     }
   }
 

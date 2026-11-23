@@ -16,25 +16,4 @@ const posts = defineCollection({
   }),
 });
 
-const nuggets = defineCollection({
-  type: 'content',
-  schema: z.object({
-    title: z.string(),           // e.g., "Nuggets #12"
-    number: z.number(),          // e.g., 12 (for URL and display)
-    dateRange: z.string(),       // e.g., "Jan 15-28, 2025"
-    pubDate: z.coerce.date(),
-    draft: z.boolean().default(false),
-    // Personal touches (optional)
-    song: z.object({
-      title: z.string(),
-      artist: z.string(),
-      url: z.string().optional(),
-    }).optional(),
-    podcast: z.object({
-      title: z.string(),
-      url: z.string().optional(),
-    }).optional(),
-  }),
-});
-
-export const collections = { posts, nuggets };
+export const collections = { posts };
