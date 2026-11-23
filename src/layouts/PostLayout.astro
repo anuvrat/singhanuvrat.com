@@ -2,11 +2,11 @@
 import type { CollectionEntry } from 'astro:content';
 import BaseLayout from './BaseLayout.astro';
 import ArticleSchema from '../components/ArticleSchema.astro';
+import Diagram from '../components/Diagram.astro';
 import RelatedPosts from '../components/RelatedPosts.astro';
 import SeriesNav from '../components/SeriesNav.astro';
 import { getReadingTime } from '../utils/readingTime';
 import { formatDate, UPDATED_THRESHOLD_MS } from '../utils/formatDate';
-import { formatTag } from '../utils/formatTag';
 import { findRelatedPosts } from '../utils/relatedPosts';
 
 interface Props {
@@ -14,46 +14,36 @@ interface Props {
   description: string;
   pubDate: Date;
   updatedDate?: Date;
+  headings: { depth: number; slug: string; text: string }[];
   body: string;
   ogImage?: string;
+  cover?: string;
   currentPost: CollectionEntry<'posts'>;
   allPosts: CollectionEntry<'posts'>[];
 }
 
 const {
-  title,
-  description,
-  pubDate,
-  updatedDate,
-  body,
-  ogImage,
-  currentPost,
-  allPosts,
+  title, description, pubDate, updatedDate, headings, body, ogImage, cover, currentPost, allPosts,
 } = Astro.props;
 
 const difficultyLabels: Record<string, string> = {
   'intro': 'Intro',
   'intermediate': 'Intermediate',
-  'deep-dive': 'Deep dive',
+  'deep-dive': 'Deep-dive',
 };
 const difficulty = currentPost.data.difficulty;
 const difficultyLabel = difficulty ? difficultyLabels[difficulty] : null;
-const tags = (currentPost.data.tags ?? []).map(formatTag);
 
 const slug = Astro.url.pathname.replace(/^\//, '').replace(/\/$/, '');
 const autoOgImage = new URL(`/og/${slug}.png`, Astro.site).toString();
 const finalOgImage = ogImage || autoOgImage;
-
 const formattedPubDate = formatDate(pubDate);
 const formattedUpdatedDate = updatedDate ? formatDate(updatedDate) : null;
-const showUpdated = updatedDate &&
-  (updatedDate.getTime() - pubDate.getTime()) > UPDATED_THRESHOLD_MS;
-
+const showUpdated = updatedDate && (updatedDate.getTime() - pubDate.getTime()) > UPDATED_THRESHOLD_MS;
 const readingTime = getReadingTime(body);
 const canonicalUrl = new URL(Astro.url.pathname, Astro.site).toString();
 const relatedPosts = findRelatedPosts(currentPost, allPosts, 3);
 const hasMath = /\$\$[\s\S]+?\$\$|\$[^$\n]+?\$/.test(body);
-const kicker = [...tags, ...(difficultyLabel ? [difficultyLabel] : [])];
 ---
 
 <BaseLayout
@@ -61,6 +51,8 @@ const kicker = [...tags, ...(difficultyLabel ? [difficultyLabel] : [])];
   description={description}
   ogImage={finalOgImage}
   hasMath={hasMath}
+  variant="post"
+  headings={headings}
 >
   <ArticleSchema
     title={title}
@@ -72,30 +64,25 @@ const kicker = [...tags, ...(difficultyLabel ? [difficultyLabel] : [])];
   />
 
   <article>
-    <header class="ph">
-      {kicker.length > 0 && <p class="kicker">{kicker.join(' · ')}</p>}
-      <h1>{title}</h1>
-      {description && <p class="dek">{description}</p>}
-      <p class="by">
-        <b>Anuvrat Singh</b>
-        <span aria-hidden="true">·</span>
-        <time datetime={pubDate.toISOString()}>{formattedPubDate}</time>
-        <span aria-hidden="true">·</span>
-        <span>{readingTime} read</span>
-        {showUpdated && (
-          <>
-            <span aria-hidden="true">·</span>
-            <span>Updated {formattedUpdatedDate}</span>
-          </>
-        )}
-      </p>
-    </header>
-    <div class="orn" aria-hidden="true"></div>
-
+    <h1>{title}</h1>
+    <div class="meta">
+      <span>Anuvrat Singh</span>
+      <span aria-hidden="true">·</span>
+      <time datetime={pubDate.toISOString()}>{formattedPubDate}</time>
+      <span aria-hidden="true">·</span>
+      <span>{readingTime}</span>
+      {difficultyLabel && <span class="pill">{difficultyLabel}</span>}
+      {showUpdated && (
+        <>
+          <span aria-hidden="true">·</span>
+          <span>Updated {formattedUpdatedDate}</span>
+        </>
+      )}
+    </div>
+    {cover && <Diagram src={cover} lead />}
     <div class="post-content">
       <slot />
     </div>
-
     <div class="post-end">
       {currentPost.data.series ? (
         <SeriesNav currentPost={currentPost} allPosts={allPosts} />
@@ -107,78 +94,41 @@ const kicker = [...tags, ...(difficultyLabel ? [difficultyLabel] : [])];
 </BaseLayout>
 
 <style>
-  .ph {
-    max-width: 820px;
-    margin: 0 auto;
-    text-align: center;
-    padding: 96px 0 56px;
-  }
-
-  .kicker {
-    font-family: var(--sans);
-    font-size: 12px;
-    letter-spacing: 0.14em;
-    text-transform: uppercase;
-    color: var(--muted);
-    margin: 0 0 28px;
-  }
-
   h1 {
-    font-size: 54px;
-    line-height: 1.1;
-    font-weight: 400;
-    letter-spacing: -0.028em;
-    color: var(--ink);
-    text-wrap: balance;
+    font-size: 28px;
+    line-height: 1.35;
+    letter-spacing: -0.02em;
+    margin: 48px 0 18px;
+    font-weight: 700;
   }
 
-  .dek {
-    font-size: 22px;
-    line-height: 1.5;
-    color: var(--dek);
-    font-weight: 400;
-    font-style: italic;
-    text-wrap: balance;
-    margin: 26px auto 0;
-    max-width: 640px;
-  }
-
-  .by {
-    margin-top: 34px;
-    font-family: var(--sans);
-    font-size: 13px;
+  .meta {
+    font-size: 12.5px;
     color: var(--muted);
     display: flex;
     flex-wrap: wrap;
-    gap: 12px;
-    justify-content: center;
+    gap: 10px;
     align-items: center;
+    margin-bottom: 34px;
   }
 
-  .by b {
-    color: var(--ink);
-    font-weight: 500;
-  }
-
-  .orn {
-    width: 56px;
-    height: 1px;
-    background: var(--accent);
-    margin: 0 auto 64px;
-    opacity: 0.6;
+  .pill {
+    border: 1px solid var(--rule);
+    border-radius: 4px;
+    padding: 2px 7px;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    line-height: 1.4;
   }
 
   .post-end {
-    max-width: 660px;
-    margin: 56px auto 0;
+    margin-top: 48px;
     padding-top: 28px;
     border-top: 1px solid var(--rule);
   }
 
   @media (max-width: 700px) {
-    .ph { padding: 48px 0 32px; }
-    h1 { font-size: 36px; }
-    .dek { font-size: 19px; }
-    .orn { margin-bottom: 40px; }
+    h1 { font-size: 23px; }
   }
 </style>

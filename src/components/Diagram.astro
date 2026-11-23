@@ -1,0 +1,70 @@
+---
+import fs from 'node:fs';
+import path from 'node:path';
+
+interface Props {
+  src?: string;
+  lead?: boolean;
+}
+
+const { src, lead = false } = Astro.props;
+
+function inlineSvg(url: string): string | null {
+  if (!url.startsWith('/') || url.includes('..') || !url.toLowerCase().endsWith('.svg')) {
+    return null;
+  }
+  const root = path.resolve(process.cwd(), 'public');
+  const file = path.resolve(root, url.replace(/^\/+/, ''));
+  if (file !== root && !file.startsWith(root + path.sep)) return null;
+  if (!fs.existsSync(file)) return null;
+
+  const counterKey = Symbol.for('diagram-id');
+  const state = globalThis as Record<symbol, number>;
+  state[counterKey] = (state[counterKey] || 0) + 1;
+  const prefix = `d${state[counterKey]}`;
+
+  let svg = fs.readFileSync(file, 'utf8').replace(/^\uFEFF/, '');
+  const ids = [...svg.matchAll(/\sid="([^"]+)"/g)].map((match) => match[1]);
+  for (const id of ids) {
+    svg = svg
+      .replaceAll(`id="${id}"`, `id="${prefix}-${id}"`)
+      .replaceAll(`url(#${id})`, `url(#${prefix}-${id})`)
+      .replaceAll(`href="#${id}"`, `href="#${prefix}-${id}"`);
+  }
+  return svg.replace(/<svg\b([^>]*)>/, (_match, attrs: string) => {
+    const cleaned = attrs.replace(/\s(?:width|height)="[^"]*"/g, '');
+    return `<svg${cleaned}>`;
+  });
+}
+
+const svg = src ? inlineSvg(src) : null;
+---
+
+{src && (
+  <div class:list={['fig', { lead }]} aria-hidden="true">
+    {svg ? <Fragment set:html={svg} /> : <img src={src} alt="" />}
+  </div>
+)}
+
+<style>
+  .fig {
+    background: var(--card);
+    border: 1px solid var(--fig-border);
+    border-radius: 10px;
+    padding: 22px 26px;
+    margin-bottom: 30px;
+  }
+
+  .fig.lead { margin-bottom: 40px; }
+
+  .fig :global(svg),
+  .fig img {
+    display: block;
+    width: 100%;
+    height: auto;
+  }
+
+  @media (max-width: 700px) {
+    .fig { padding: 14px; }
+  }
+</style>

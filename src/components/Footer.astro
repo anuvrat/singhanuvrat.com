@@ -14,32 +14,21 @@ const year = new Date().getFullYear();
 
 <style>
   footer {
+    padding: 44px 0 72px;
     display: flex;
     justify-content: space-between;
     gap: 16px;
-    padding: 52px 0 72px;
-    font-family: var(--sans);
-    font-size: 13px;
+    font-size: 12.5px;
     color: var(--muted);
   }
 
   .links { display: flex; flex-wrap: wrap; }
-
-  .links a { margin-left: 24px; }
-
+  .links a { margin-left: 20px; color: inherit; }
   .links a:first-child { margin-left: 0; }
-
   a:hover { color: var(--ink); }
 
   @media (max-width: 700px) {
-    footer {
-      flex-direction: column;
-      gap: 14px;
-    }
-
-    .links a {
-      margin-left: 0;
-      margin-right: 20px;
-    }
+    footer { flex-direction: column; gap: 14px; }
+    .links a { margin-left: 0; margin-right: 20px; }
   }
 </style>

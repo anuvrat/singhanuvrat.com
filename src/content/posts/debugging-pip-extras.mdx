@@ -4,6 +4,7 @@ description: "A debugging journey into Python wheel files: why pip couldn't find
 pubDate: 2025-01-08
 tags: ["deep-dive", "tutorial"]
 difficulty: "intermediate"
+cover: "/diagrams/pip-extras.svg"
 ---
 
 Python packaging has a nifty feature to include packages as an optional dependency for extended functionality. As an example, Amazon SageMaker released a new capability to use partner AI apps within SageMaker. We worked with the partner app teams to include `sagemaker` as an optional dependency of their app SDK. Within AWS, you can enable the partner app and install the SDK to include SageMaker specific functionalities.

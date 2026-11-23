@@ -1,26 +1,26 @@
 {
-  "name": "Folio Light",
+  "name": "Monograph Light",
   "type": "light",
   "colors": {
-    "editor.background": "#f2eee5",
-    "editor.foreground": "#3a352d"
+    "editor.background": "#fafbfc",
+    "editor.foreground": "#24292f"
   },
   "tokenColors": [
     {
       "scope": ["comment", "punctuation.definition.comment"],
-      "settings": { "foreground": "#6e665c", "fontStyle": "italic" }
+      "settings": { "foreground": "#6b7280", "fontStyle": "italic" }
     },
     {
       "scope": ["string", "string.quoted"],
-      "settings": { "foreground": "#6b4f1d" }
+      "settings": { "foreground": "#1a7f5a" }
     },
     {
       "scope": ["constant.numeric", "constant.language"],
-      "settings": { "foreground": "#a2412c" }
+      "settings": { "foreground": "#b35900" }
     },
     {
       "scope": ["keyword", "storage.type", "storage.modifier", "entity.name.tag", "support.type", "entity.other.attribute-name"],
-      "settings": { "foreground": "#2f4f7f" }
+      "settings": { "foreground": "#4a6fa5" }
     },
     {
       "scope": ["entity.name.function", "support.function", "entity.name.class"],
@@ -28,7 +28,7 @@
     },
     {
       "scope": ["variable", "variable.other", "punctuation", "keyword.operator", "meta.brace"],
-      "settings": { "foreground": "#3a352d" }
+      "settings": { "foreground": "#24292f" }
     }
   ]
 }

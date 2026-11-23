@@ -1,0 +1,104 @@
+---
+interface Props {
+  headings: { depth: number; slug: string; text: string }[];
+}
+
+const { headings } = Astro.props;
+const sections = headings.filter((heading) => heading.depth === 2);
+---
+
+{sections.length > 1 && (
+  <nav class="toc" aria-label="Contents">
+    <p class="label">Contents</p>
+    {sections.map((section) => (
+      <a href={`#${section.slug}`} data-section={section.slug}>{section.text}</a>
+    ))}
+  </nav>
+)}
+
+<style>
+  .toc {
+    grid-column: 1;
+    grid-row: 1;
+    justify-self: end;
+    align-self: start;
+    width: 220px;
+    position: sticky;
+    top: 0;
+    padding: 150px 36px 48px 0;
+  }
+
+  .label {
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    margin: 0 0 14px;
+    color: var(--ink);
+    font-weight: 700;
+  }
+
+  a {
+    display: block;
+    font-size: 12px;
+    color: var(--muted);
+    line-height: 1.5;
+    padding: 5px 0 5px 12px;
+    border-left: 1px solid var(--rule);
+  }
+
+  a:hover { color: var(--ink); }
+
+  a.on {
+    color: var(--ink);
+    border-left: 2px solid var(--accent);
+    padding-left: 11px;
+  }
+
+  @media (max-width: 1120px) {
+    .toc { display: none; }
+  }
+</style>
+
+<script>
+  let onScroll: (() => void) | undefined;
+
+  function initToc() {
+    if (onScroll) window.removeEventListener('scroll', onScroll);
+    onScroll = undefined;
+
+    const links = Array.from(document.querySelectorAll<HTMLAnchorElement>('.toc a[data-section]'));
+    const sections = links
+      .map((link) => ({
+        link,
+        element: document.getElementById(link.dataset.section || ''),
+      }))
+      .filter((section): section is { link: HTMLAnchorElement; element: HTMLElement } => section.element !== null);
+
+    if (sections.length === 0) return;
+
+    const setActive = (slug: string) => {
+      for (const { link } of sections) {
+        const on = link.dataset.section === slug;
+        link.classList.toggle('on', on);
+        if (on) link.setAttribute('aria-current', 'true');
+        else link.removeAttribute('aria-current');
+      }
+    };
+
+    onScroll = () => {
+      const y = window.scrollY;
+      let active = sections[0].link.dataset.section || '';
+      for (const { link, element } of sections) {
+        const top = element.getBoundingClientRect().top + window.scrollY;
+        if (top - window.innerHeight * 0.28 <= y) active = link.dataset.section || active;
+      }
+      setActive(active);
+    };
+
+    window.addEventListener('scroll', onScroll, { passive: true });
+    onScroll();
+  }
+
+  initToc();
+  document.addEventListener('astro:after-swap', initToc);
+</script>
