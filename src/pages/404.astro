@@ -6,45 +6,36 @@ import BaseLayout from '../layouts/BaseLayout.astro';
   <div class="not-found">
     <h1>404</h1>
     <p>The page you're looking for doesn't exist.</p>
-    <nav class="nav-links">
-      <a href="/">← Back to Home</a>
-    </nav>
+    <a href="/">← Essays</a>
   </div>
 </BaseLayout>
 
 <style>
   .not-found {
-    max-width: var(--content-width);
-    text-align: center;
-    padding: var(--space-2xl) 0;
+    padding: 72px 0 24px;
+    max-width: 660px;
   }
 
   h1 {
-    font-size: 6rem;
-    color: var(--text-muted);
-    margin-bottom: var(--space-md);
-    line-height: 1;
+    font-size: 54px;
+    font-weight: 400;
+    letter-spacing: -0.028em;
+    color: var(--ink);
+    margin-bottom: 16px;
   }
 
   p {
-    color: var(--text-muted);
-    margin-bottom: var(--space-xl);
+    font-size: 20.5px;
+    line-height: 1.7;
+    color: var(--text);
+    margin-bottom: 20px;
   }
 
-  .nav-links {
-    display: flex;
-    justify-content: center;
-    gap: var(--space-lg);
-    flex-wrap: wrap;
-  }
-
-  .nav-links a {
+  a {
+    font-family: var(--sans);
+    font-size: 13.5px;
     color: var(--accent);
-    text-decoration: none;
   }
 
-  .nav-links a:hover {
-    text-decoration: underline;
-    text-underline-offset: 3px;
-  }
+  a:hover { color: var(--accent-hover); }
 </style>

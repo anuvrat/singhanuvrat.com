@@ -23,9 +23,10 @@ const { chart } = Astro.props;
     padding: 0 !important;
   }
 
-  /* Override Mermaid's default styles for dark mode */
-  :global(html.dark) .mermaid {
-    filter: invert(0.85) hue-rotate(180deg);
+  @media (prefers-color-scheme: dark) {
+    .mermaid {
+      filter: invert(0.85) hue-rotate(180deg);
+    }
   }
 </style>
 
@@ -33,11 +34,11 @@ const { chart } = Astro.props;
   import mermaid from 'mermaid';
 
   function initMermaid() {
-    const isDark = document.documentElement.classList.contains('dark');
+    const isDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
 
     mermaid.initialize({
       theme: isDark ? 'dark' : 'default',
-      fontFamily: 'JetBrains Mono, monospace',
+      fontFamily: 'IBM Plex Mono, ui-monospace, monospace',
       securityLevel: 'strict',
     });
 

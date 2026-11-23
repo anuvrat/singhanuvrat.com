@@ -27,12 +27,13 @@ const { posts } = Astro.props;
 
 <style>
   .related-posts h2 {
-    font-size: var(--text-sm);
-    font-weight: 400;
-    color: var(--text-muted);
-    margin-bottom: var(--space-md);
+    font-family: var(--sans);
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--muted);
+    margin: 0 0 16px;
     text-transform: uppercase;
-    letter-spacing: 0.05em;
+    letter-spacing: 0.12em;
     border: none;
     padding: 0;
   }
@@ -72,12 +73,17 @@ const { posts } = Astro.props;
   }
 
   .title {
-    font-weight: 500;
+    font-family: var(--serif);
+    font-weight: 400;
+    font-size: 18px;
+    line-height: 1.35;
+    letter-spacing: -0.01em;
   }
 
   .date {
-    font-size: var(--text-sm);
-    color: var(--text-muted);
+    font-family: var(--sans);
+    font-size: 12.5px;
+    color: var(--muted);
     white-space: nowrap;
   }
 </style>

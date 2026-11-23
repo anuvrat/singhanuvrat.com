@@ -1,96 +1,56 @@
 ---
-import ThemeToggle from './ThemeToggle.astro';
-
-interface Props {
-  showTagline?: boolean;
-}
-
-const { showTagline = true } = Astro.props;
+import Logo from './Logo.astro';
 ---
 
-<header>
-  <div class="header-content">
-    <div class="header-left">
-      <a href="/" class="site-title">Anuvrat</a>
-      {showTagline && <span class="tagline">Thinking in systems</span>}
-    </div>
-    <div class="header-right">
-      <ThemeToggle />
-    </div>
-  </div>
+<header class="site-header">
+  <a class="brand" href="/">
+    <Logo />
+    <span>Anuvrat</span>
+  </a>
+  <nav aria-label="Site">
+    <a class="on" href="/" aria-current="page">Essays</a>
+    <a href="/rss.xml">RSS</a>
+  </nav>
 </header>
 
 <style>
-  header {
-    padding: var(--space-lg) 0;
-    border-bottom: 1px solid var(--border);
-    margin-bottom: var(--space-xl);
-  }
-
-  .header-content {
-    max-width: var(--max-width);
-    margin: 0 auto;
-    padding: 0 var(--space-md);
+  .site-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
+    gap: 16px;
+    padding: 36px 0;
   }
 
-  .header-left {
-    display: flex;
-    flex-direction: column;
-    gap: var(--space-xs);
-  }
-
-  .site-title {
-    font-size: var(--text-xl);
-    font-weight: 700;
-    color: var(--text);
-    text-decoration: none;
-  }
-
-  .site-title:hover {
-    color: var(--accent);
-    text-decoration: none;
-  }
-
-  .tagline {
-    font-size: var(--text-sm);
-    color: var(--text-muted);
-  }
-
-  .header-right {
+  .brand {
     display: flex;
     align-items: center;
-    gap: var(--space-md);
+    gap: 12px;
+    font-family: var(--serif);
+    font-size: 21px;
+    font-weight: 500;
+    color: var(--ink);
+    letter-spacing: -0.01em;
+    min-width: 0;
   }
 
-  @media (max-width: 640px) {
-    .header-content {
-      gap: var(--space-sm);
-    }
-
-    .site-title {
-      font-size: var(--text-lg);
-    }
-
-    .tagline {
-      font-size: 0.7rem;
-    }
-
-    .header-right {
-      gap: var(--space-sm);
-    }
+  nav {
+    display: flex;
+    align-items: center;
+    gap: 30px;
+    font-family: var(--sans);
+    font-size: 13.5px;
+    color: var(--muted);
+    flex-shrink: 0;
   }
 
-  /* Very narrow screens - hide tagline to prevent crowding */
-  @media (max-width: 400px) {
-    .tagline {
-      display: none;
-    }
+  nav a.on { color: var(--ink); }
 
-    .header-left {
-      gap: 0;
-    }
+  nav a:hover { color: var(--ink); }
+
+  @media (max-width: 700px) {
+    .site-header { padding: 24px 0; }
+
+    nav a:not(.on) { display: none; }
   }
 </style>

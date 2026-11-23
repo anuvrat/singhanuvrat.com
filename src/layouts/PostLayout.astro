@@ -4,9 +4,9 @@ import BaseLayout from './BaseLayout.astro';
 import ArticleSchema from '../components/ArticleSchema.astro';
 import RelatedPosts from '../components/RelatedPosts.astro';
 import SeriesNav from '../components/SeriesNav.astro';
-import TocDots from '../components/TocDots.astro';
 import { getReadingTime } from '../utils/readingTime';
 import { formatDate, UPDATED_THRESHOLD_MS } from '../utils/formatDate';
+import { formatTag } from '../utils/formatTag';
 import { findRelatedPosts } from '../utils/relatedPosts';
 
 interface Props {
@@ -14,45 +14,54 @@ interface Props {
   description: string;
   pubDate: Date;
   updatedDate?: Date;
-  headings: { depth: number; slug: string; text: string }[];
   body: string;
   ogImage?: string;
   currentPost: CollectionEntry<'posts'>;
   allPosts: CollectionEntry<'posts'>[];
 }
 
-const { title, description, pubDate, updatedDate, headings, body, ogImage, currentPost, allPosts } = Astro.props;
+const {
+  title,
+  description,
+  pubDate,
+  updatedDate,
+  body,
+  ogImage,
+  currentPost,
+  allPosts,
+} = Astro.props;
 
-// Difficulty display mapping
 const difficultyLabels: Record<string, string> = {
   'intro': 'Intro',
   'intermediate': 'Intermediate',
-  'deep-dive': 'Deep-dive',
+  'deep-dive': 'Deep dive',
 };
 const difficulty = currentPost.data.difficulty;
 const difficultyLabel = difficulty ? difficultyLabels[difficulty] : null;
+const tags = (currentPost.data.tags ?? []).map(formatTag);
 
-// Auto-generate OG image URL if not provided
 const slug = Astro.url.pathname.replace(/^\//, '').replace(/\/$/, '');
 const autoOgImage = new URL(`/og/${slug}.png`, Astro.site).toString();
 const finalOgImage = ogImage || autoOgImage;
 
 const formattedPubDate = formatDate(pubDate);
 const formattedUpdatedDate = updatedDate ? formatDate(updatedDate) : null;
-
-// Show updated date only if it's more than 7 days after pubDate
 const showUpdated = updatedDate &&
   (updatedDate.getTime() - pubDate.getTime()) > UPDATED_THRESHOLD_MS;
 
 const readingTime = getReadingTime(body);
 const canonicalUrl = new URL(Astro.url.pathname, Astro.site).toString();
 const relatedPosts = findRelatedPosts(currentPost, allPosts, 3);
-
-// Detect if post contains math (LaTeX delimiters)
 const hasMath = /\$\$[\s\S]+?\$\$|\$[^$\n]+?\$/.test(body);
+const kicker = [...tags, ...(difficultyLabel ? [difficultyLabel] : [])];
 ---
 
-<BaseLayout title={`${title} — Anuvrat`} description={description} ogImage={finalOgImage} hasMath={hasMath}>
+<BaseLayout
+  title={`${title} — Anuvrat`}
+  description={description}
+  ogImage={finalOgImage}
+  hasMath={hasMath}
+>
   <ArticleSchema
     title={title}
     description={description}
@@ -62,148 +71,114 @@ const hasMath = /\$\$[\s\S]+?\$\$|\$[^$\n]+?\$/.test(body);
     ogImage={finalOgImage}
   />
 
-  <TocDots headings={headings} />
+  <article>
+    <header class="ph">
+      {kicker.length > 0 && <p class="kicker">{kicker.join(' · ')}</p>}
+      <h1>{title}</h1>
+      {description && <p class="dek">{description}</p>}
+      <p class="by">
+        <b>Anuvrat Singh</b>
+        <span aria-hidden="true">·</span>
+        <time datetime={pubDate.toISOString()}>{formattedPubDate}</time>
+        <span aria-hidden="true">·</span>
+        <span>{readingTime} read</span>
+        {showUpdated && (
+          <>
+            <span aria-hidden="true">·</span>
+            <span>Updated {formattedUpdatedDate}</span>
+          </>
+        )}
+      </p>
+    </header>
+    <div class="orn" aria-hidden="true"></div>
 
-  <article class="post">
-    <div class="post-layout">
-      <div class="content-column">
-        <header class="post-header">
-          <h1>{title}</h1>
-          <div class="post-meta">
-            <span class="author">Anuvrat Singh</span>
-            <span class="separator">·</span>
-            <time datetime={pubDate.toISOString()}>{formattedPubDate}</time>
-            <span class="separator">·</span>
-            <span>{readingTime}</span>
-            {difficultyLabel && (
-              <>
-                <span class="separator">·</span>
-                <span class={`difficulty difficulty-${difficulty}`}>{difficultyLabel}</span>
-              </>
-            )}
-            {showUpdated && (
-              <>
-                <span class="separator">·</span>
-                <span class="updated">Updated {formattedUpdatedDate}</span>
-              </>
-            )}
-          </div>
-        </header>
+    <div class="post-content">
+      <slot />
+    </div>
 
-        <div class="post-content">
-          <slot />
-        </div>
-
-        <footer class="post-footer">
-          {currentPost.data.series ? (
-            <SeriesNav currentPost={currentPost} allPosts={allPosts} />
-          ) : (
-            <RelatedPosts posts={relatedPosts} />
-          )}
-        </footer>
-      </div>
-
-      <aside class="margin-column">
-        <!-- Margin notes will be positioned here via CSS -->
-      </aside>
+    <div class="post-end">
+      {currentPost.data.series ? (
+        <SeriesNav currentPost={currentPost} allPosts={allPosts} />
+      ) : (
+        <RelatedPosts posts={relatedPosts} />
+      )}
     </div>
   </article>
 </BaseLayout>
 
 <style>
-  .post {
-    max-width: var(--max-width);
+  .ph {
+    max-width: 820px;
     margin: 0 auto;
+    text-align: center;
+    padding: 96px 0 56px;
   }
 
-  .post-layout {
-    display: grid;
-    grid-template-columns: 1fr;
-    gap: var(--space-lg);
+  .kicker {
+    font-family: var(--sans);
+    font-size: 12px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin: 0 0 28px;
   }
 
-  @media (min-width: 1024px) {
-    .post-layout {
-      grid-template-columns: var(--content-width) var(--sidebar-width);
-      gap: var(--space-xl);
-    }
+  h1 {
+    font-size: 54px;
+    line-height: 1.1;
+    font-weight: 400;
+    letter-spacing: -0.028em;
+    color: var(--ink);
+    text-wrap: balance;
   }
 
-  .margin-column {
-    display: none;
+  .dek {
+    font-size: 22px;
+    line-height: 1.5;
+    color: var(--dek);
+    font-weight: 400;
+    font-style: italic;
+    text-wrap: balance;
+    margin: 26px auto 0;
+    max-width: 640px;
   }
 
-  @media (min-width: 1024px) {
-    .margin-column {
-      display: block;
-    }
-  }
-
-  .content-column {
-    min-width: 0; /* Prevent overflow */
-  }
-
-  .post-header {
-    margin-bottom: var(--space-xl);
-  }
-
-  .post-header h1 {
-    font-size: var(--text-2xl);
-    margin-bottom: var(--space-sm);
-  }
-
-  .post-meta {
+  .by {
+    margin-top: 34px;
+    font-family: var(--sans);
+    font-size: 13px;
+    color: var(--muted);
     display: flex;
     flex-wrap: wrap;
-    gap: var(--space-sm);
-    font-size: var(--text-sm);
-    color: var(--text-muted);
+    gap: 12px;
+    justify-content: center;
+    align-items: center;
   }
 
-  .author {
-    color: var(--text);
+  .by b {
+    color: var(--ink);
     font-weight: 500;
   }
 
-  .separator {
-    color: var(--text-muted);
+  .orn {
+    width: 56px;
+    height: 1px;
+    background: var(--accent);
+    margin: 0 auto 64px;
+    opacity: 0.6;
   }
 
-  .updated {
-    font-style: italic;
+  .post-end {
+    max-width: 660px;
+    margin: 56px auto 0;
+    padding-top: 28px;
+    border-top: 1px solid var(--rule);
   }
 
-  .difficulty {
-    font-size: 0.7rem;
-    padding: 0.15em 0.5em;
-    border-radius: 3px;
-    text-transform: uppercase;
-    letter-spacing: 0.03em;
-    font-weight: 500;
-  }
-
-  .difficulty-intro {
-    background: var(--bg-secondary);
-    color: var(--text-muted);
-  }
-
-  .difficulty-intermediate {
-    background: var(--bg-secondary);
-    color: var(--text);
-  }
-
-  .difficulty-deep-dive {
-    background: var(--bg-secondary);
-    color: var(--accent);
-  }
-
-  .post-content {
-    position: relative;
-  }
-
-  .post-footer {
-    margin-top: var(--space-2xl);
-    padding-top: var(--space-xl);
-    border-top: 1px solid var(--border);
+  @media (max-width: 700px) {
+    .ph { padding: 48px 0 32px; }
+    h1 { font-size: 36px; }
+    .dek { font-size: 19px; }
+    .orn { margin-bottom: 40px; }
   }
 </style>

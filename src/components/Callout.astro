@@ -40,15 +40,19 @@ const { type = 'note' } = Astro.props;
     border-left-color: #b5854a;
   }
 
-  :global(html.dark) .callout-warning {
-    border-left-color: #d4a85a;
+  @media (prefers-color-scheme: dark) {
+    .callout-warning {
+      border-left-color: #e0b56a;
+    }
   }
 
   .callout-important {
     border-left-color: #8b5a5a;
   }
 
-  :global(html.dark) .callout-important {
-    border-left-color: #c27878;
+  @media (prefers-color-scheme: dark) {
+    .callout-important {
+      border-left-color: #e0a0a0;
+    }
   }
 </style>
